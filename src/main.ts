@@ -12,7 +12,7 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
-    .setTitle('Social Media API')
+    .setTitle('ALGO')
     .setDescription('SOCIAL MEDIA APP API')
     .setVersion('1.0')
     .addTag('social-media-management')
