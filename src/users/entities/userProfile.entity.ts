@@ -1,3 +1,4 @@
+import { Comment } from 'src/posts/entities/comment.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
 import { OneToMany } from 'typeorm/decorator/relations/OneToMany';
@@ -25,15 +26,21 @@ export class UserProfile {
   @Column()
   avatar: string;
 
+  @Column()
+  cover: string;
+
+  @Column()
+  bio: string;
+
+  @Column()
+  friends: string;
+
+  @Column()
+  interest: string;
+
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
 
-  // @Column()
-  // cover: string;
-
-  // @Column()
-  // bio: string;
-
-  // @Column()
-  // interest: string;
+  @OneToMany(() => Comment, (comment) => comment.userProfile)
+  comment: Comment;
 }

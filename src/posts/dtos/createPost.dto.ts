@@ -24,6 +24,9 @@ export class CreatePostDto {
   @ApiProperty({ type: Date })
   date: Date;
 
+  // @ApiProperty({type: 'string'})
+  // media:
+
   @ApiProperty({ type: 'string' })
   tags: string;
 

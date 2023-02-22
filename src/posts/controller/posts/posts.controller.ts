@@ -6,10 +6,11 @@ import {
   UsePipes,
   ValidationPipe,
   Body,
+  Param,
 } from '@nestjs/common';
+import { Request } from '@nestjs/common/decorators';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
-import { PostMediaDto } from 'src/posts/dtos/postMedia.dto';
 import { PostsService } from 'src/posts/service/posts/posts.service';
 
 @Controller('posts')
@@ -17,40 +18,42 @@ import { PostsService } from 'src/posts/service/posts/posts.service';
 export class PostsController {
   constructor(private postService: PostsService) {}
 
-  @Get()
-  getAllPosts() {
+  @Get('/posts')
+  getAllPosts(@Request() req) {
+    console.log(req);
     return this.postService.getAllPost();
   }
 
   @Post()
   addPost(@Body() createPostDto: CreatePostDto) {
-    console.log('created');
     return this.postService.createNewPost(createPostDto);
   }
 
-  @Get(':id')
-  getPost() {
-    return 'specific post';
+  @Get('/:id')
+  getPost(@Param('id') id: number) {
+    return this.postService.getPost(id);
   }
 
-  @Delete(':id')
-  deletePost() {
-    return 'delete post';
+  @Delete('/:id')
+  deletePost(@Param('id') id: number) {
+    return this.postService.deletePost(id);
   }
 
   @Get('/:id/comments')
-  comments() {
-    return 'comments';
+  getComments(@Param('id') id: number) {
+    return this.postService.getComments(id);
   }
 
   @Post('/:id/comments')
-  @UsePipes(ValidationPipe)
-  addComment(@Body() addCommentDto: AddCommentDto) {
-    return 'add comment';
+  addComment(@Param('id') id: number, @Body() addCommentDto: AddCommentDto) {
+    return this.postService.addComment(id, addCommentDto);
   }
 
   @Delete('/:id/comments/:commentId')
-  deleteComment() {
-    return 'delet a comment';
+  deleteComment(
+    @Param('id') id: number,
+    @Param('commentId') commentId: number,
+  ) {
+    return this.postService.deleteComment(id, commentId);
   }
 }

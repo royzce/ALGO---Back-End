@@ -25,6 +25,10 @@ export class UsersService {
     user.email = userDto.email;
     user.password = userDto.password;
     user.avatar = userDto.avatar;
+    user.cover = '';
+    user.bio = '';
+    user.friends = '';
+    user.interest = '';
 
     user = await this.userProfileRepository.save(user);
   }

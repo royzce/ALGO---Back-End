@@ -2,21 +2,24 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common/enums';
 import { HttpException } from '@nestjs/common/exceptions';
 import { ProfilesService } from 'src/profiles/service/profiles/profiles.service';
+import { Query } from 'typeorm/driver/Query';
 
 @Controller('profiles')
 export class ProfilesController {
   constructor(private profileService: ProfilesService) {}
 
-  @Get()
-  seacrhResult() {
-    return 'Profiles';
-  }
+  // @Get()
+  // seacrhProfile(@Query('searchQuery') searchQuery: string) {
+  //   return 'Profiles';
+  // }
 
   @Get(':username')
-  userProfile(@Param('username') username: string) {}
+  getUserProfile(@Param('username') username: string) {
+    return this.profileService.findProfile(username);
+  }
 
   @Get(':username/post')
-  userPost() {
-    return 'users posts';
+  getUserPost(@Param('username') username: string) {
+    return this.profileService.getProfilePost(username);
   }
 }

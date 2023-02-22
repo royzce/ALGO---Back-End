@@ -1,9 +1,11 @@
 import { Module, Provider } from '@nestjs/common';
 import { DatabaseModule } from 'src/database/database/database.module';
+import { reactionProviders } from 'src/reactions/providers/reaction.providers';
 import { userProfileProviders } from 'src/users/providers/userProfile.providers';
 import { Connection } from 'typeorm';
 import { PostsController } from './controller/posts/posts.controller';
 import { Post } from './entities/post.entity';
+import { commentProviders } from './providers/comment.providers';
 import { postProviders } from './providers/post.providers';
 import { PostsService } from './service/posts/posts.service';
 
@@ -11,6 +13,7 @@ import { PostsService } from './service/posts/posts.service';
   imports: [DatabaseModule],
   controllers: [PostsController],
   providers: [
+    ...commentProviders,
     ...postProviders,
     {
       provide: 'POSTS_REPOSITORY',
@@ -18,6 +21,7 @@ import { PostsService } from './service/posts/posts.service';
       inject: ['DATABASE_CONNECTION'],
     },
     ...userProfileProviders,
+    ...reactionProviders,
     PostsService,
   ] as Provider<any>[],
   exports: [PostsService],
