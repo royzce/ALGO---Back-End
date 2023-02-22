@@ -1,18 +1,21 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
+// import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
+import { UsersService } from 'src/users/services/users/users.service';
+import { Repository } from 'typeorm';
+import { UserProfile } from 'src/users/entities/userProfile.entity';
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UserService,
+    private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOne(username);
-    if (user && (await bcrypt.compare(pass, user.password))) {
+    if (user) {
       const { password, ...result } = user;
       return result;
     }
@@ -24,7 +27,7 @@ export class AuthService {
       const { password, ...result } = user;
 
       const payload = {
-        sub: result.id,
+        sub: result.userId,
       };
 
       return {

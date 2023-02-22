@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { createUserProfileDto } from 'src/users/dtos/createUserProfile.dto';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -11,7 +12,6 @@ export class UsersService {
   ) {}
 
   async createNewUser(userDto: createUserProfileDto) {
-    console.log('went here');
     let user = await this.userProfileRepository.findOne({
       where: { username: userDto.username },
     });
@@ -23,7 +23,8 @@ export class UsersService {
     user.firstName = userDto.firstName;
     user.lastName = userDto.lastName;
     user.email = userDto.email;
-    user.password = userDto.password;
+    const saltOrRounds = 10;
+    user.password = await bcrypt.hash(userDto.password, saltOrRounds);
     user.avatar = userDto.avatar;
     user.cover = '';
     user.bio = '';
@@ -31,6 +32,24 @@ export class UsersService {
     user.interest = '';
 
     user = await this.userProfileRepository.save(user);
+  }
+
+  //from Royce
+  async findOne(username: string) {
+    return this.userProfileRepository.findOne({ where: { username } });
+  }
+
+  //from Royce
+  async findUserById(id: number) {
+    let user = await this.userProfileRepository.findOneBy({ userId: id });
+    user.password = undefined;
+
+    return user;
+  }
+
+  async getUserNameByEmail(email: string) {
+    let user = await this.userProfileRepository.findOneBy({ email });
+    return user.username;
   }
 
   //deleteAfterTesting

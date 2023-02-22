@@ -7,8 +7,9 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { User } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/user.service';
+import { UserProfile } from 'src/users/entities/userProfile.entity';
+// import { UserService } from 'src/user/user.service';
+import { UsersService } from 'src/users/services/users/users.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -17,12 +18,12 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UserService,
+    private readonly userService: UsersService,
   ) {}
 
   @Post('auth')
   async login(@Body() loginDto: LoginDto) {
-    const user = new User();
+    const user = new UserProfile();
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (emailPattern.test(loginDto.username)) {
