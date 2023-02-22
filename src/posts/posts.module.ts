@@ -1,5 +1,5 @@
 import { Module, Provider } from '@nestjs/common';
-import { DatabaseModule } from 'src/database/database/database.module';
+import { DatabaseModule } from 'src/database/database.module';
 import { reactionProviders } from 'src/reactions/providers/reaction.providers';
 import { userProfileProviders } from 'src/users/providers/userProfile.providers';
 import { Connection } from 'typeorm';

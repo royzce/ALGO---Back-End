@@ -7,7 +7,7 @@ import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
 import { userProfileProviders } from 'src/users/providers/userProfile.providers';
 import { UsersService } from 'src/users/services/users/users.service';
-import { DatabaseModule } from 'src/database/database/database.module';
+import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
   imports: [
