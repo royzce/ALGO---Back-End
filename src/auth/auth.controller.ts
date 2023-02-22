@@ -8,7 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
-// import { UserService } from 'src/user/user.service';
 import { UsersService } from 'src/users/services/users/users.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -36,11 +35,5 @@ export class AuthController {
     user.password = loginDto.password;
 
     return this.authService.login(user);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('users/me')
-  getProfile(@Request() req) {
-    return this.authService.getUserInfo(req.sub);
   }
 }

@@ -37,8 +37,4 @@ export class AuthService {
 
     throw new BadRequestException('Invalid username / password.');
   }
-
-  async getUserInfo(id: number) {
-    return this.usersService.findUserById(id);
-  }
 }

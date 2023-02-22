@@ -52,6 +52,7 @@ export class UsersService {
     return user.username;
   }
 
-  //deleteAfterTesting
-  getAllUsers() {}
+  async getUserInfo(id: number) {
+    return this.userProfileRepository.findOneBy({ userId: id });
+  }
 }
