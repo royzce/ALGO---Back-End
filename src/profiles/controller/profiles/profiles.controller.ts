@@ -2,6 +2,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Query,
   Param,
   UseGuards,
   UseInterceptors,
@@ -15,10 +16,10 @@ import { ProfilesService } from 'src/profiles/service/profiles/profiles.service'
 export class ProfilesController {
   constructor(private profileService: ProfilesService) {}
 
-  // @Get()
-  // seacrhProfile(@Query('searchQuery') searchQuery: string) {
-  //   return 'Profiles';
-  // }
+  @Get()
+  getUsersByName(@Query('search') search: string) {
+    return this.profileService.getUsersByName(search);
+  }
 
   @Get(':username')
   getUserProfile(@Param('username') username: string) {

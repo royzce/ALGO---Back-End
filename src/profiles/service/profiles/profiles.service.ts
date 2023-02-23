@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { profile } from 'console';
 import { Post } from 'src/posts/entities/post.entity';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 @Injectable()
 export class ProfilesService {
@@ -34,5 +34,15 @@ export class ProfilesService {
     });
 
     return profile;
+  }
+
+  async getUsersByName(query: string): Promise<UserProfile[]> {
+    return await this.userProfileRepository.find({
+      select: { userId: true, firstName: true, lastName: true, avatar: true },
+      where: [
+        { firstName: Like(`%${query}%`) },
+        { lastName: Like(`%${query}%`) },
+      ],
+    });
   }
 }
