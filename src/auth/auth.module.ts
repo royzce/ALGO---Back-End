@@ -8,10 +8,12 @@ import { JwtStrategy } from './jwt.strategy';
 import { userProfileProviders } from 'src/users/providers/userProfile.providers';
 import { UsersService } from 'src/users/services/users/users.service';
 import { DatabaseModule } from 'src/database/database.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
     DatabaseModule,
+    UsersModule,
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,

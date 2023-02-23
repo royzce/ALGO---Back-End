@@ -33,7 +33,6 @@ export class AuthController {
       user.username = loginDto.username;
     }
     user.password = loginDto.password;
-
     return this.authService.login(user);
   }
 }

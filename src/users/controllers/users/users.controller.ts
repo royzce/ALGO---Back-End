@@ -8,17 +8,12 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { createUserProfileDto } from 'src/users/dtos/createUserProfile.dto';
 import { UsersService } from 'src/users/services/users/users.service';
-
 @Controller('users')
 export class UsersController {
-  constructor(
-    private userService: UsersService,
-    private authService: AuthService,
-  ) {}
+  constructor(private userService: UsersService) {}
 
   @Post()
   @UsePipes(ValidationPipe)
@@ -26,9 +21,13 @@ export class UsersController {
     return this.userService.createNewUser(createUserDto);
   }
 
+  //kirito
+  //Sw0rd@rt
+
   @UseGuards(JwtAuthGuard)
   @Get('/me')
   getProfile(@Request() req) {
-    return this.userService.getUserInfo(req.user.sub);
+    console.log(req.sub);
+    return this.userService.getUserInfo(req.sub);
   }
 }
