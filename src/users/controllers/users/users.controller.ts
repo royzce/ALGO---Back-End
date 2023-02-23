@@ -22,10 +22,10 @@ export class UsersController {
   }
 
   //deleteAfterTesting
-  @Get()
-  getAllUsers() {
-    return this.userService.getAllUsers();
-  }
+  // @Get()
+  // getAllUsers() {
+  //   return this.userService.getAllUsers();
+  // }
 
   @Get('me')
   getUser() {
@@ -34,7 +34,12 @@ export class UsersController {
   }
 
   @Get('search')
-  searchUsersByName(@Query('q') q: string) {
+  getUsersByName(@Query('q') q: string) {
     return this.userService.getUsersByName(q);
+  }
+
+  @Get('all')
+  getAllUsers() {
+    return this.userService.getAllUser();
   }
 }

@@ -56,10 +56,18 @@ export class UsersService {
   async getUsersByName(query: string) {
     return await this.userProfileRepository.find({
       select: { userId: true, firstName: true, lastName: true, avatar: true },
-      where: { firstName: Like(`%${query}%`) },
+      where: [
+        { firstName: Like(`%${query}%`) },
+        { lastName: Like(`%${query}%`) },
+      ],
     });
   }
 
+  async getAllUser() {
+    return await this.userProfileRepository.find({
+      select: { userId: true, firstName: true, lastName: true, avatar: true },
+    });
+  }
   //deleteAfterTesting
   getAllUsers() {}
 }
