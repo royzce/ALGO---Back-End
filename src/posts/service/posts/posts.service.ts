@@ -28,7 +28,10 @@ export class PostsService {
     private commentRepository: Repository<Comment>,
   ) {}
 
-  async createNewPost(createPostDto: CreatePostDto, userId: number) {
+  async createNewPost(
+    createPostDto: CreatePostDto,
+    userId: number,
+  ): Promise<Post> {
     let post = new Post();
     // let media = new Media();
 
@@ -42,9 +45,11 @@ export class PostsService {
     post.isEdited = createPostDto.isEdited;
 
     post = await this.postRepository.save(post);
+
+    return post;
   }
 
-  async getAllPost() {
+  async getAllPost(): Promise<Post[]> {
     const allPosts = await this.postRepository.find({
       relations: ['user', 'comment', 'reactions'],
     });
@@ -84,7 +89,7 @@ export class PostsService {
     return { ...post, id };
   }
 
-  async getComments(id: number) {
+  async getComments(id: number): Promise<Comment[]> {
     const comments = await this.commentRepository.find({
       where: { postId: id },
       relations: ['userProfile'],
@@ -104,7 +109,7 @@ export class PostsService {
     return comment;
   }
 
-  async getPost(id: number) {
+  async getPost(id: number): Promise<Post> {
     const post = await this.postRepository.findOne({
       where: { postId: id },
       relations: ['user', 'comment', 'reactions'],

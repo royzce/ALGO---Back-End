@@ -17,18 +17,18 @@ import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
 import { PostsService } from 'src/posts/service/posts/posts.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(JwtAuthGuard)
 @Controller('posts')
 @UsePipes(ValidationPipe)
 export class PostsController {
   constructor(private postService: PostsService) {}
 
-  @Get('/posts')
+  @UseGuards(JwtAuthGuard)
   getAllPosts(@Request() req) {
     console.log(req);
     return this.postService.getAllPost();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post()
   addPost(@Body() createPostDto: CreatePostDto, @Request() req) {
     return this.postService.createNewPost(createPostDto, req.user.userId);
@@ -50,7 +50,6 @@ export class PostsController {
     return this.postService.getComments(id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('/:id/comments')
   addComment(
     @Param('id') id: number,

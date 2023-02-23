@@ -34,25 +34,23 @@ export class UsersService {
     user = await this.userProfileRepository.save(user);
   }
 
-  //from Royce
-  async findOne(username: string) {
+  async findOne(username: string): Promise<UserProfile> {
     return this.userProfileRepository.findOne({ where: { username } });
   }
 
-  //from Royce
-  async findUserById(id: number) {
+  async findUserById(id: number): Promise<UserProfile> {
     let user = await this.userProfileRepository.findOneBy({ userId: id });
     user.password = undefined;
 
     return user;
   }
 
-  async getUserNameByEmail(email: string) {
+  async getUserNameByEmail(email: string): Promise<string> {
     let user = await this.userProfileRepository.findOneBy({ email });
     return user.username;
   }
 
-  async getUserInfo(id: number) {
+  async getUserInfo(id: number): Promise<UserProfile> {
     return this.userProfileRepository.findOneBy({ userId: id });
   }
 }

@@ -3,13 +3,13 @@ import {
   Controller,
   Get,
   Param,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { HttpStatus } from '@nestjs/common/enums';
-import { HttpException } from '@nestjs/common/exceptions';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ProfilesService } from 'src/profiles/service/profiles/profiles.service';
-import { Query } from 'typeorm/driver/Query';
 
+@UseGuards(JwtAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('profiles')
 export class ProfilesController {
