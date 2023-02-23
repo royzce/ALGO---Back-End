@@ -3,21 +3,19 @@ import {
   IsEmail,
   IsNotEmpty,
   IsOptional,
-  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
 
-export class editUserProfileDto {
+export class EditUserProfileDto {
   @ApiProperty({ minLength: 5, maxLength: 15 })
   @IsNotEmpty()
   @MinLength(5)
   @MaxLength(15)
   username: string;
 
-  @ApiProperty({ type: 'email' })
+  @ApiProperty({ type: 'string' })
   @IsEmail()
-  //isUnique
   email: string;
 
   @ApiProperty({ required: true, maxLength: 30 })
@@ -30,13 +28,15 @@ export class editUserProfileDto {
   @MaxLength(50)
   lastName: string;
 
-  @ApiProperty({ required: true, minLength: 8 })
-  @IsNotEmpty()
-  @MinLength(8)
-  @Matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{8,}$/)
-  password: string;
-
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, type: 'string' })
   @IsOptional()
   avatar: string;
+
+  @ApiProperty({ required: false, type: 'string' })
+  @IsOptional()
+  cover: string;
+
+  @ApiProperty({ required: false, type: 'string' })
+  @IsOptional()
+  bio: string;
 }

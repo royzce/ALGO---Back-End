@@ -6,8 +6,13 @@ import {
   Param,
   UseGuards,
   UseInterceptors,
+  Post,
+  Put,
+  Body,
+  Request,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { EditUserProfileDto } from 'src/profiles/dtos/editProfile.dto';
 import { ProfilesService } from 'src/profiles/service/profiles/profiles.service';
 
 @UseGuards(JwtAuthGuard)
@@ -29,5 +34,10 @@ export class ProfilesController {
   @Get(':username/post')
   getUserPost(@Param('username') username: string) {
     return this.profileService.getProfilePost(username);
+  }
+
+  @Put('/edit')
+  editProfile(@Body() editProfileDto: EditUserProfileDto, @Request() req) {
+    return this.profileService.editProfile(req.user.userId, editProfileDto);
   }
 }
