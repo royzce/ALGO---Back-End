@@ -41,6 +41,7 @@ export class UserProfile {
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
 
-  @OneToMany(() => Comment, (comment) => comment.userProfile)
-  comment: Comment;
+  //Commented out to fix database constraint
+  // @OneToMany(() => Comment, (comment) => comment.userProfile)
+  // comment: Comment[];
 }

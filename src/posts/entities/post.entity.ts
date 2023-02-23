@@ -14,19 +14,25 @@ export class Post {
   userId: number;
 
   @Column()
+  isRepost: boolean;
+
+  @Column()
   value: string;
 
   @Column()
+  repostId: number;
+
+  @Column()
   privacy: string;
+
+  @Column()
+  isEdited: boolean;
 
   @Column()
   date: Date;
 
   @Column()
   tags: string;
-
-  @Column()
-  isRepost: boolean;
 
   @ManyToOne(() => UserProfile, (user) => user.posts)
   @JoinColumn({ name: 'userId' })

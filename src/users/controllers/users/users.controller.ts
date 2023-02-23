@@ -21,13 +21,9 @@ export class UsersController {
     return this.userService.createNewUser(createUserDto);
   }
 
-  //kirito
-  //Sw0rd@rt
-
   @UseGuards(JwtAuthGuard)
   @Get('/me')
   getProfile(@Request() req) {
-    console.log(req.sub);
-    return this.userService.getUserInfo(req.sub);
+    return this.userService.getUserInfo(req.user.userId);
   }
 }

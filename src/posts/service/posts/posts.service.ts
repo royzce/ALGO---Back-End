@@ -27,16 +27,18 @@ export class PostsService {
     private commentRepository: Repository<Comment>,
   ) {}
 
-  async createNewPost(createPostDto: CreatePostDto) {
+  async createNewPost(createPostDto: CreatePostDto, userId: number) {
     let post = new Post();
-    let media = new Media();
+    // let media = new Media();
 
-    post.userId = createPostDto.userId;
+    post.userId = userId;
+    post.isRepost = createPostDto.isRepost;
     post.value = createPostDto.value;
+    post.repostId = createPostDto.repostId;
     post.privacy = createPostDto.privacy;
     post.tags = createPostDto.tags;
     post.date = createPostDto.date;
-    post.isRepost = createPostDto.isRepost;
+    post.isEdited = createPostDto.isEdited;
 
     post = await this.postRepository.save(post);
   }
@@ -77,18 +79,22 @@ export class PostsService {
     return allPosts;
   }
 
-  async addComment(id: number, addCommentDto: AddCommentDto) {
+  async addComment(id, addCommentDto: AddCommentDto, userId: number) {
     const post = await this.postRepository.findOne({ where: { postId: id } });
     if (!post) {
       throw new NotFoundException('Post not found');
     }
 
+    console.log(post);
+
     let comment = new Comment();
 
-    comment.postId = id;
-    comment.date = addCommentDto.date;
-    comment.replyTo = addCommentDto.replyTo;
     comment.value = addCommentDto.value;
+    comment.replyTo = addCommentDto.replyTo;
+    comment.isEdited = addCommentDto.isEdited;
+    comment.date = addCommentDto.date;
+    comment.postId = id;
+    comment.userId = userId;
     comment = await this.commentRepository.save(comment);
 
     return comment;

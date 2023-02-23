@@ -8,7 +8,8 @@ import {
   Body,
   Param,
 } from '@nestjs/common';
-import { Request } from '@nestjs/common/decorators';
+import { Request, UseGuards } from '@nestjs/common/decorators';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
 import { PostsService } from 'src/posts/service/posts/posts.service';
@@ -24,9 +25,10 @@ export class PostsController {
     return this.postService.getAllPost();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  addPost(@Body() createPostDto: CreatePostDto) {
-    return this.postService.createNewPost(createPostDto);
+  addPost(@Body() createPostDto: CreatePostDto, @Request() req) {
+    return this.postService.createNewPost(createPostDto, req.user.userId);
   }
 
   @Get('/:id')
@@ -44,9 +46,14 @@ export class PostsController {
     return this.postService.getComments(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/:id/comments')
-  addComment(@Param('id') id: number, @Body() addCommentDto: AddCommentDto) {
-    return this.postService.addComment(id, addCommentDto);
+  addComment(
+    @Param('id') id: number,
+    @Body() addCommentDto: AddCommentDto,
+    @Request() req,
+  ) {
+    return this.postService.addComment(id, addCommentDto, req.user.userId);
   }
 
   @Delete('/:id/comments/:commentId')
