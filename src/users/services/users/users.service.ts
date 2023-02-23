@@ -3,6 +3,7 @@ import { createUserProfileDto } from 'src/users/dtos/createUserProfile.dto';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Like } from 'typeorm/find-options/operator/Like';
 
 @Injectable()
 export class UsersService {
@@ -48,6 +49,16 @@ export class UsersService {
   async getUserNameByEmail(email: string): Promise<string> {
     let user = await this.userProfileRepository.findOneBy({ email });
     return user.username;
+  }
+  //new
+  async getUsersByName(query: string) {
+    return await this.userProfileRepository.find({
+      select: { userId: true, firstName: true, lastName: true, avatar: true },
+      where: [
+        { firstName: Like(`%${query}%`) },
+        { lastName: Like(`%${query}%`) },
+      ],
+    });
   }
 
   async getUserInfo(id: number): Promise<UserProfile> {

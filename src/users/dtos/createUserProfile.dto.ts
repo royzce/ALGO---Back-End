@@ -40,5 +40,5 @@ export class createUserProfileDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
-  avatar: string;
+  avatar?: string;
 }

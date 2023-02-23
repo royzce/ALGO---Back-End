@@ -3,6 +3,8 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Param,
+  Query,
   Post,
   Request,
   UseGuards,
@@ -29,5 +31,9 @@ export class UsersController {
   @Get('/me')
   getProfile(@Request() req) {
     return this.userService.getUserInfo(req.user.userId);
+  }
+  @Get('search')
+  getUsersByName(@Query('q') q: string) {
+    return this.userService.getUsersByName(q);
   }
 }
