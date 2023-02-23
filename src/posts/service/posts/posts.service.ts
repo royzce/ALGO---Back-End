@@ -5,6 +5,7 @@ import {
   HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
 import { Comment } from 'src/posts/entities/comment.entity';
@@ -43,38 +44,10 @@ export class PostsService {
     post = await this.postRepository.save(post);
   }
 
-  async getAllPost(): Promise<
-    {
-      firstName: string;
-      lastName: string;
-      avatar: string;
-      username: string;
-      value: string;
-      privacy: string;
-      date: Date;
-      tags: string;
-      isRepost: boolean;
-    }[]
-  > {
-    const users = await this.userProfileRepository.find({
-      relations: ['posts'],
+  async getAllPost() {
+    const allPosts = await this.postRepository.find({
+      relations: ['user', 'comment', 'reactions'],
     });
-
-    const allPosts = users.flatMap((user) =>
-      user.posts.map((post) => ({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        avatar: user.avatar,
-        username: user.username,
-        value: post.value,
-        privacy: post.privacy,
-        date: post.date,
-        tags: post.tags,
-        isRepost: post.isRepost,
-      })),
-    );
-
-    console.log(...allPosts);
 
     return allPosts;
   }
@@ -136,7 +109,6 @@ export class PostsService {
       where: { postId: id },
       relations: ['user', 'comment', 'reactions'],
     });
-
     return post;
   }
 }

@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { Comment } from 'src/posts/entities/comment.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
@@ -21,6 +22,7 @@ export class UserProfile {
   lastName: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column()

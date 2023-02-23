@@ -1,16 +1,20 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
   Post,
   Request,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { createUserProfileDto } from 'src/users/dtos/createUserProfile.dto';
 import { UsersService } from 'src/users/services/users/users.service';
+
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
 export class UsersController {
   constructor(private userService: UsersService) {}

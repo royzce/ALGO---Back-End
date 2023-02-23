@@ -7,6 +7,8 @@ import {
   ValidationPipe,
   Body,
   Param,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { Request, UseGuards } from '@nestjs/common/decorators';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -14,6 +16,7 @@ import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
 import { PostsService } from 'src/posts/service/posts/posts.service';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('posts')
 @UsePipes(ValidationPipe)
 export class PostsController {
@@ -32,6 +35,7 @@ export class PostsController {
   }
 
   @Get('/:id')
+  @UseInterceptors(ClassSerializerInterceptor)
   getPost(@Param('id') id: number) {
     return this.postService.getPost(id);
   }

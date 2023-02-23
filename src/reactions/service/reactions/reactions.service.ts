@@ -13,20 +13,37 @@ export class ReactionsService {
     private postRepository: Repository<Post>,
   ) {}
 
-  async addReaction(addReactionDto: AddReactionDto) {
-    // const post = await this.postRepository.findOne({
-    //   where: { postId: addReactionDto.postId },
-    // }); // fetch post from the database
-    // if (!post) {
-    //   throw new NotFoundException(
-    //     `Post with ID ${addReactionDto.postId} not found`,
-    //   );
-    // }
-    let reaction = new Reaction();
-    reaction.postId = addReactionDto.postId;
-    reaction.value = addReactionDto.value;
-    reaction.date = addReactionDto.date;
-    reaction = await this.reactionRepository.save(reaction);
-    return reaction;
+  async addReaction(addReactionDto: AddReactionDto, userId: number) {
+    const post = await this.postRepository.findOne({
+      where: { postId: addReactionDto.postId },
+    });
+
+    if (!post) {
+      throw new NotFoundException('Post not Found');
+    }
+
+    const existingReaction = await this.reactionRepository.findOne({
+      where: {
+        postId: addReactionDto.postId,
+        userId: userId,
+      },
+    });
+
+    if (existingReaction) {
+      // If the user has already reacted to this post, update the existing reaction
+      existingReaction.value = addReactionDto.value;
+      existingReaction.date = addReactionDto.date;
+      await this.reactionRepository.save(existingReaction);
+      return existingReaction;
+    } else {
+      // Otherwise, create a new reaction
+      let reaction = new Reaction();
+      reaction.postId = addReactionDto.postId;
+      reaction.userId = userId;
+      reaction.value = addReactionDto.value;
+      reaction.date = addReactionDto.date;
+      reaction = await this.reactionRepository.save(reaction);
+      return reaction;
+    }
   }
 }

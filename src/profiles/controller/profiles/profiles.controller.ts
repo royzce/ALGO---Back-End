@@ -1,9 +1,16 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Param,
+  UseInterceptors,
+} from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common/enums';
 import { HttpException } from '@nestjs/common/exceptions';
 import { ProfilesService } from 'src/profiles/service/profiles/profiles.service';
 import { Query } from 'typeorm/driver/Query';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('profiles')
 export class ProfilesController {
   constructor(private profileService: ProfilesService) {}
