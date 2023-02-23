@@ -10,10 +10,11 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
 } from '@nestjs/common';
-import { Request, UseGuards } from '@nestjs/common/decorators';
+import { Put, Request, UseGuards } from '@nestjs/common/decorators';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
+import { EditPostDto } from 'src/posts/dtos/editPost.dto';
 import { PostsService } from 'src/posts/service/posts/posts.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -24,12 +25,13 @@ export class PostsController {
   constructor(private postService: PostsService) {}
 
   @UseGuards(JwtAuthGuard)
+  @Get()
   getAllPosts(@Request() req) {
     console.log(req);
     return this.postService.getAllPost();
   }
 
-  @Post()
+  @Post('/')
   addPost(@Body() createPostDto: CreatePostDto, @Request() req) {
     return this.postService.createNewPost(createPostDto, req.user.userId);
   }
@@ -65,5 +67,14 @@ export class PostsController {
     @Param('commentId') commentId: number,
   ) {
     return this.postService.deleteComment(id, commentId);
+  }
+
+  @Put('/:id/edit')
+  editPost(
+    @Param('id') postId: number,
+    @Request() req,
+    @Body() editPostDto: EditPostDto,
+  ) {
+    return this.postService.editPost(req.user.userId, postId, editPostDto);
   }
 }

@@ -8,6 +8,7 @@ import {
 import { plainToClass } from 'class-transformer';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
+import { EditPostDto } from 'src/posts/dtos/editPost.dto';
 import { Comment } from 'src/posts/entities/comment.entity';
 import { Media } from 'src/posts/entities/media.entity';
 import { Post } from 'src/posts/entities/post.entity';
@@ -115,5 +116,37 @@ export class PostsService {
       relations: ['user', 'comment', 'reactions'],
     });
     return post;
+  }
+
+  async editPost(userId: number, _postId: number, editPostDto: EditPostDto) {
+    let user = await this.userProfileRepository.findOne({
+      where: { userId: userId },
+    });
+
+    if (!user) {
+      throw new HttpException('Unable to edit', HttpStatus.UNAUTHORIZED);
+    }
+
+    let post = await this.postRepository.findOne({
+      where: { postId: _postId },
+    });
+
+    if (!post) {
+      throw new HttpException('Post not found', HttpStatus.BAD_REQUEST);
+    }
+
+    post.date = editPostDto.date || post.date;
+    post.privacy = editPostDto.privacy || post.privacy;
+    post.value = editPostDto.value || post.value;
+    post.isEdited = true;
+    post.tags = editPostDto.tags || post.tags;
+    post.isRepost = editPostDto.isRepost || post.isRepost;
+
+    post = await this.postRepository.save(post);
+    console.log(user);
+
+    console.log(post);
+
+    return 'saved';
   }
 }
