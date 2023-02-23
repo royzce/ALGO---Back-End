@@ -17,6 +17,9 @@ export class Reaction {
   postId: number;
 
   @Column()
+  userId: number;
+
+  @Column()
   value: string;
 
   @Column()

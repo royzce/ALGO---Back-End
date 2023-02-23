@@ -7,29 +7,35 @@ import {
   ValidationPipe,
   Body,
   Param,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
-import { Request } from '@nestjs/common/decorators';
+import { Request, UseGuards } from '@nestjs/common/decorators';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
 import { PostsService } from 'src/posts/service/posts/posts.service';
 
+@UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(JwtAuthGuard)
 @Controller('posts')
 @UsePipes(ValidationPipe)
 export class PostsController {
   constructor(private postService: PostsService) {}
 
-  @Get('/posts')
+  @UseGuards(JwtAuthGuard)
   getAllPosts(@Request() req) {
     console.log(req);
     return this.postService.getAllPost();
   }
 
   @Post()
-  addPost(@Body() createPostDto: CreatePostDto) {
-    return this.postService.createNewPost(createPostDto);
+  addPost(@Body() createPostDto: CreatePostDto, @Request() req) {
+    return this.postService.createNewPost(createPostDto, req.user.userId);
   }
 
   @Get('/:id')
+  @UseInterceptors(ClassSerializerInterceptor)
   getPost(@Param('id') id: number) {
     return this.postService.getPost(id);
   }
@@ -45,8 +51,12 @@ export class PostsController {
   }
 
   @Post('/:id/comments')
-  addComment(@Param('id') id: number, @Body() addCommentDto: AddCommentDto) {
-    return this.postService.addComment(id, addCommentDto);
+  addComment(
+    @Param('id') id: number,
+    @Body() addCommentDto: AddCommentDto,
+    @Request() req,
+  ) {
+    return this.postService.addComment(id, addCommentDto, req.user.userId);
   }
 
   @Delete('/:id/comments/:commentId')

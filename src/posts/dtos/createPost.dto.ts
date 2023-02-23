@@ -8,28 +8,30 @@ import {
 } from 'class-validator';
 
 export class CreatePostDto {
-  @ApiProperty({ required: true, type: 'number' })
-  @IsNotEmpty()
-  @IsNumber()
-  userId: number;
+  @ApiProperty({ type: 'boolean' })
+  isRepost: boolean;
 
   @ApiProperty({ minLength: 1 })
   @MinLength(1)
   value: string;
 
+  @ApiProperty({ type: 'number' })
+  @IsOptional()
+  repostId: number;
+
   @ApiProperty({ required: true })
   @IsNotEmpty()
   privacy: string;
 
-  @ApiProperty({ type: Date })
-  date: Date;
-
   // @ApiProperty({type: 'string'})
-  // media:
+  // media: media[]
 
   @ApiProperty({ type: 'string' })
   tags: string;
 
   @ApiProperty({ type: 'boolean' })
-  isRepost: boolean;
+  isEdited: boolean;
+
+  @ApiProperty({ type: Date })
+  date: Date;
 }

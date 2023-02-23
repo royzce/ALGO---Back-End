@@ -5,6 +5,7 @@ import {
   HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
 import { Comment } from 'src/posts/entities/comment.entity';
@@ -27,68 +28,51 @@ export class PostsService {
     private commentRepository: Repository<Comment>,
   ) {}
 
-  async createNewPost(createPostDto: CreatePostDto) {
+  async createNewPost(
+    createPostDto: CreatePostDto,
+    userId: number,
+  ): Promise<Post> {
     let post = new Post();
-    let media = new Media();
+    // let media = new Media();
 
-    post.userId = createPostDto.userId;
+    post.userId = userId;
+    post.isRepost = createPostDto.isRepost;
     post.value = createPostDto.value;
+    post.repostId = createPostDto.repostId;
     post.privacy = createPostDto.privacy;
     post.tags = createPostDto.tags;
     post.date = createPostDto.date;
-    post.isRepost = createPostDto.isRepost;
+    post.isEdited = createPostDto.isEdited;
 
     post = await this.postRepository.save(post);
+
+    return post;
   }
 
-  async getAllPost(): Promise<
-    {
-      firstName: string;
-      lastName: string;
-      avatar: string;
-      username: string;
-      value: string;
-      privacy: string;
-      date: Date;
-      tags: string;
-      isRepost: boolean;
-    }[]
-  > {
-    const users = await this.userProfileRepository.find({
-      relations: ['posts'],
+  async getAllPost(): Promise<Post[]> {
+    const allPosts = await this.postRepository.find({
+      relations: ['user', 'comment', 'reactions'],
     });
-
-    const allPosts = users.flatMap((user) =>
-      user.posts.map((post) => ({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        avatar: user.avatar,
-        username: user.username,
-        value: post.value,
-        privacy: post.privacy,
-        date: post.date,
-        tags: post.tags,
-        isRepost: post.isRepost,
-      })),
-    );
-
-    console.log(...allPosts);
 
     return allPosts;
   }
 
-  async addComment(id: number, addCommentDto: AddCommentDto) {
+  async addComment(id, addCommentDto: AddCommentDto, userId: number) {
     const post = await this.postRepository.findOne({ where: { postId: id } });
     if (!post) {
       throw new NotFoundException('Post not found');
     }
 
+    console.log(post);
+
     let comment = new Comment();
 
-    comment.postId = id;
-    comment.date = addCommentDto.date;
-    comment.replyTo = addCommentDto.replyTo;
     comment.value = addCommentDto.value;
+    comment.replyTo = addCommentDto.replyTo;
+    comment.isEdited = addCommentDto.isEdited;
+    comment.date = addCommentDto.date;
+    comment.postId = id;
+    comment.userId = userId;
     comment = await this.commentRepository.save(comment);
 
     return comment;
@@ -105,7 +89,7 @@ export class PostsService {
     return { ...post, id };
   }
 
-  async getComments(id: number) {
+  async getComments(id: number): Promise<Comment[]> {
     const comments = await this.commentRepository.find({
       where: { postId: id },
       relations: ['userProfile'],
@@ -125,12 +109,11 @@ export class PostsService {
     return comment;
   }
 
-  async getPost(id: number) {
+  async getPost(id: number): Promise<Post> {
     const post = await this.postRepository.findOne({
       where: { postId: id },
       relations: ['user', 'comment', 'reactions'],
     });
-
     return post;
   }
 }

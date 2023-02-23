@@ -16,6 +16,9 @@ export class Comment {
   commentId: number;
 
   @Column()
+  userId: number;
+
+  @Column()
   postId: number;
 
   @Column()
@@ -25,11 +28,15 @@ export class Comment {
   replyTo: number;
 
   @Column()
+  isEdited: boolean;
+
+  @Column()
   date: Date;
 
-  @ManyToOne(() => UserProfile, (user) => user.comment)
-  @JoinColumn({ name: 'commentId' })
-  userProfile: UserProfile;
+  //Commented out to fix database constraint
+  // @ManyToOne(() => UserProfile, (user) => user.comment)
+  // @JoinColumn({ name: 'commentId' })
+  // userProfile: UserProfile;
 
   @ManyToOne(() => Post, (post) => post.comment)
   @JoinColumn({ name: 'postId' })

@@ -1,5 +1,5 @@
 import { Module, Provider } from '@nestjs/common';
-import { DatabaseModule } from 'src/database/database/database.module';
+import { DatabaseModule } from 'src/database/database.module';
 import { postProviders } from 'src/posts/providers/post.providers';
 import { Connection } from 'typeorm/connection/Connection';
 import { ReactionsController } from './controller/reactions/reactions.controller';
