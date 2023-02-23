@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  Query,
   Post,
   UsePipes,
   ValidationPipe,
@@ -28,5 +30,11 @@ export class UsersController {
   @Get('me')
   getUser() {
     //return this.userService.findUser();
+    return 'awit';
+  }
+
+  @Get('search')
+  searchUsersByName(@Query('q') q: string) {
+    return this.userService.getUsersByName(q);
   }
 }
