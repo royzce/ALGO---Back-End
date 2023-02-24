@@ -7,10 +7,9 @@ export class MailerController {
 
   @Get()
   async sendEmail() {
-    await this.mailerService.sendEmail(
+    await this.mailerService.sendResetPasswordEmail(
       'yaprendon@gmail.com',
-      'SAMPLE EMAIL',
-      'text Hello World',
+      'inset Token',
     );
     return 'email sent';
   }

@@ -21,9 +21,9 @@ import { ProfilesService } from 'src/profiles/service/profiles/profiles.service'
 export class ProfilesController {
   constructor(private profileService: ProfilesService) {}
 
-  @Get()
-  getUsersByName(@Query('search') search: string) {
-    return this.profileService.getUsersByName(search);
+  @Get('search')
+  getUsersByName(@Query('q') q: string) {
+    return this.profileService.getUsersByName(q);
   }
 
   @Get(':username')
