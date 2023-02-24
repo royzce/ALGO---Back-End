@@ -8,6 +8,7 @@ import {
 import { plainToClass } from 'class-transformer';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
+import { EditCommentDto } from 'src/posts/dtos/editComment.dto';
 import { EditPostDto } from 'src/posts/dtos/editPost.dto';
 import { Comment } from 'src/posts/entities/comment.entity';
 import { Media } from 'src/posts/entities/media.entity';
@@ -148,5 +149,37 @@ export class PostsService {
     console.log(post);
 
     return 'saved';
+  }
+
+  async editComment(
+    userId: number,
+    postId: number,
+    commentId: number,
+    editCommentDto: EditCommentDto,
+  ) {
+    let user = await this.userProfileRepository.findOne({
+      where: { userId: userId },
+    });
+
+    if (!user) {
+      throw new HttpException('Unable to edit', HttpStatus.UNAUTHORIZED);
+    }
+
+    let comment = await this.commentRepository.findOne({
+      where: { postId: postId, commentId: commentId },
+    });
+
+    if (!comment) {
+      throw new HttpException('Comment not Found', HttpStatus.BAD_REQUEST);
+    }
+
+    comment.value = editCommentDto.value || comment.value;
+    comment.isEdited = true;
+
+    try {
+      comment = await this.commentRepository.save(comment);
+    } catch (error) {
+      throw new HttpException('Edit Failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

@@ -14,6 +14,7 @@ import { Put, Request, UseGuards } from '@nestjs/common/decorators';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
+import { EditCommentDto } from 'src/posts/dtos/editComment.dto';
 import { EditPostDto } from 'src/posts/dtos/editPost.dto';
 import { PostsService } from 'src/posts/service/posts/posts.service';
 
@@ -76,5 +77,20 @@ export class PostsController {
     @Body() editPostDto: EditPostDto,
   ) {
     return this.postService.editPost(req.user.userId, postId, editPostDto);
+  }
+
+  @Put('/:id/comments/:commentId/edit')
+  editComment(
+    @Param('id') postId: number,
+    @Param('commentId') commentId: number,
+    @Request() req,
+    @Body() editComment: EditCommentDto,
+  ) {
+    return this.postService.editComment(
+      req.user.userId,
+      postId,
+      commentId,
+      editComment,
+    );
   }
 }
