@@ -32,8 +32,4 @@ export class UsersController {
   getProfile(@Request() req) {
     return this.userService.getUserInfo(req.user.userId);
   }
-  @Get('search')
-  getUsersByName(@Query('q') q: string) {
-    return this.userService.getUsersByName(q);
-  }
 }
