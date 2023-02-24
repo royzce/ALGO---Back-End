@@ -7,12 +7,14 @@ import { PostsController } from './controller/posts/posts.controller';
 import { Post } from './entities/post.entity';
 import { commentProviders } from './providers/comment.providers';
 import { postProviders } from './providers/post.providers';
+import { postMediaProviders } from './providers/postMedia.providers';
 import { PostsService } from './service/posts/posts.service';
 
 @Module({
   imports: [DatabaseModule],
   controllers: [PostsController],
   providers: [
+    ...postMediaProviders,
     ...commentProviders,
     ...postProviders,
     {

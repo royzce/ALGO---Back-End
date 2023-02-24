@@ -4,6 +4,7 @@ import {
   HttpException,
   HttpStatus,
   NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
@@ -20,6 +21,8 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class PostsService {
   constructor(
+    @Inject('POSTMEDIA_REPOSITORY')
+    private postMediaRepository: Repository<Media>,
     @Inject('POSTS_REPOSITORY')
     private postRepository: Repository<Post>,
     @Inject('USERPROFILE_REPOSITORY')
@@ -35,25 +38,41 @@ export class PostsService {
     userId: number,
   ): Promise<Post> {
     let post = new Post();
-    // let media = new Media();
+    let media = new Media();
 
     post.userId = userId;
     post.isRepost = createPostDto.isRepost;
     post.value = createPostDto.value;
     post.repostId = createPostDto.repostId;
     post.privacy = createPostDto.privacy;
-    // post.tags = createPostDto.tags;
     post.date = createPostDto.date;
-    post.isEdited = createPostDto.isEdited;
+    post.isEdited = false;
 
-    post = await this.postRepository.save(post);
+    try {
+      post = await this.postRepository.save(post);
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+
+    if (createPostDto.media) {
+      createPostDto.media.forEach(async (m) => {
+        media.userId = userId;
+        media.postId = post.postId;
+        media.mediaLink = m;
+        try {
+          await this.postMediaRepository.save(media);
+        } catch (error) {
+          throw new InternalServerErrorException();
+        }
+      });
+    }
 
     return post;
   }
 
   async getAllPost(): Promise<Post[]> {
     const allPosts = await this.postRepository.find({
-      relations: ['user', 'comment', 'reactions'],
+      relations: ['media', 'user', 'comment', 'reactions'],
     });
 
     return allPosts;
@@ -114,7 +133,7 @@ export class PostsService {
   async getPost(id: number): Promise<Post> {
     const post = await this.postRepository.findOne({
       where: { postId: id },
-      relations: ['user', 'comment', 'reactions'],
+      relations: ['media', 'user', 'comment', 'reactions'],
     });
     return post;
   }
@@ -140,7 +159,7 @@ export class PostsService {
     post.privacy = editPostDto.privacy || post.privacy;
     post.value = editPostDto.value || post.value;
     post.isEdited = true;
-    post.tags = editPostDto.tags || post.tags;
+
     post.isRepost = editPostDto.isRepost || post.isRepost;
 
     post = await this.postRepository.save(post);

@@ -1,4 +1,8 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { JoinColumn } from 'typeorm/decorator/relations/JoinColumn';
+import { ManyToMany } from 'typeorm/decorator/relations/ManyToMany';
+import { ManyToOne } from 'typeorm/decorator/relations/ManyToOne';
+import { Post } from './post.entity';
 
 @Entity()
 export class Media {
@@ -9,5 +13,12 @@ export class Media {
   postId: number;
 
   @Column()
+  userId: number;
+
+  @Column()
   mediaLink: string;
+
+  @ManyToOne(() => Post, (post) => post.media)
+  @JoinColumn({ name: 'postId' })
+  post: Post;
 }
