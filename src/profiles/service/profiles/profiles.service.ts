@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { profile } from 'console';
+import { Media } from 'src/posts/entities/media.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { EditUserProfileDto } from 'src/profiles/dtos/editProfile.dto';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
@@ -12,6 +13,8 @@ export class ProfilesService {
     private userProfileRepository: Repository<UserProfile>,
     @Inject('POST_REPOSITORY')
     private postRepository: Repository<Post>,
+    @Inject('POSTMEDIA_REPOSITORY')
+    private postMediaRepository: Repository<Media>,
   ) {}
 
   async findProfile(_username): Promise<UserProfile> {
@@ -31,7 +34,7 @@ export class ProfilesService {
 
     let profile = await this.postRepository.find({
       where: { userId: userId },
-      relations: ['user', 'comment', 'reactions'],
+      relations: ['tags', 'media', 'user', 'comment', 'reactions'],
     });
 
     return profile;
@@ -82,4 +85,14 @@ export class ProfilesService {
     }
     throw new HttpException('Email is already in use', HttpStatus.UNAUTHORIZED);
   };
+
+  async getAllPhotos(_userId: number): Promise<Media[]> {
+    console.log(_userId);
+    let photos = await this.postMediaRepository.find({
+      where: { userId: _userId },
+    });
+    console.log(photos);
+
+    return photos;
+  }
 }
