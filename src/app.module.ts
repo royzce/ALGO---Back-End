@@ -6,6 +6,7 @@ import { ReactionsModule } from './reactions/reactions.module';
 import { PostsModule } from './posts/posts.module';
 import { MailerModule } from './mailer/mailer.module';
 import { DatabaseModule } from './database/database.module';
+import { SharesModule } from './shares/shares.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DatabaseModule } from './database/database.module';
     ReactionsModule,
     PostsModule,
     DatabaseModule,
+    SharesModule,
   ],
   controllers: [],
   providers: [],

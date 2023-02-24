@@ -1,4 +1,3 @@
-import { Provider } from '@nestjs/common';
 import { Connection } from 'typeorm';
 import { Reaction } from '../entities/reaction.entity';
 

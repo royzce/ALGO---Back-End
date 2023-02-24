@@ -27,8 +27,8 @@ export class PostsService {
     private postRepository: Repository<Post>,
     @Inject('USERPROFILE_REPOSITORY')
     private userProfileRepository: Repository<UserProfile>,
-    @Inject('REACTION_REPOSITORY')
-    private reactionRepository: Repository<Reaction>,
+    // @Inject('REACTION_REPOSITORY')
+    // private reactionRepository: Repository<Reaction>,
     @Inject('COMMENT_REPOSITORY')
     private commentRepository: Repository<Comment>,
   ) {}
@@ -72,7 +72,7 @@ export class PostsService {
 
   async getAllPost(): Promise<Post[]> {
     const allPosts = await this.postRepository.find({
-      relations: ['media', 'user', 'comment', 'reactions'],
+      relations: ['shares', 'media', 'user', 'comment', 'reactions'],
     });
 
     return allPosts;

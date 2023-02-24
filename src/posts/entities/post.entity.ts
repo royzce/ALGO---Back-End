@@ -1,4 +1,5 @@
 import { Reaction } from 'src/reactions/entities/reaction.entity';
+import { Share } from 'src/shares/entities/share.entity';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { JoinColumn } from 'typeorm/decorator/relations/JoinColumn';
@@ -44,4 +45,7 @@ export class Post {
 
   @OneToMany(() => Media, (media) => media.post)
   media: Media[];
+
+  @OneToMany(() => Share, (share) => share.post)
+  shares: Share[];
 }
