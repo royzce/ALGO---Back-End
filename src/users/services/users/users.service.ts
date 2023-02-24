@@ -50,8 +50,9 @@ export class UsersService {
     let user = await this.userProfileRepository.findOneBy({ email });
     return user.username;
   }
-  //new
+
   async getUsersByName(query: string) {
+    // if (query.trim().length > 0) {
     return await this.userProfileRepository.find({
       select: { userId: true, firstName: true, lastName: true, avatar: true },
       where: [
@@ -59,6 +60,9 @@ export class UsersService {
         { lastName: Like(`%${query}%`) },
       ],
     });
+    // } else {
+    //   return;
+    // }
   }
 
   async getUserInfo(id: number): Promise<UserProfile> {

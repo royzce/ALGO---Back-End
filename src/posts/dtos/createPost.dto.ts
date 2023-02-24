@@ -23,12 +23,6 @@ export class CreatePostDto {
   @IsNotEmpty()
   privacy: string;
 
-  // @ApiProperty({type: 'string'})
-  // media: media[]
-
-  @ApiProperty({ type: 'string' })
-  tags: string;
-
   @ApiProperty({ type: 'boolean' })
   isEdited: boolean;
 

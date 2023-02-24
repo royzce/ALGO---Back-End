@@ -40,7 +40,7 @@ export class PostsService {
     post.value = createPostDto.value;
     post.repostId = createPostDto.repostId;
     post.privacy = createPostDto.privacy;
-    post.tags = createPostDto.tags;
+    // post.tags = createPostDto.tags;
     post.date = createPostDto.date;
     post.isEdited = createPostDto.isEdited;
 

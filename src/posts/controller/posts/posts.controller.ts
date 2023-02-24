@@ -24,13 +24,25 @@ export class PostsController {
   constructor(private postService: PostsService) {}
 
   @UseGuards(JwtAuthGuard)
+  @Get()
   getAllPosts(@Request() req) {
-    console.log(req);
+    console.log('test', req);
     return this.postService.getAllPost();
   }
 
   @Post()
-  addPost(@Body() createPostDto: CreatePostDto, @Request() req) {
+  addPost(@Body() body: any, @Request() req) {
+    console.log(body);
+    const createPostDto: CreatePostDto = {
+      isRepost: body.isRepost,
+      value: body.value,
+      repostId: body.repostId,
+      privacy: body.privacy,
+      isEdited: false,
+      date: body.date,
+    };
+
+    //add img, tags, reactions, likes
     return this.postService.createNewPost(createPostDto, req.user.userId);
   }
 
