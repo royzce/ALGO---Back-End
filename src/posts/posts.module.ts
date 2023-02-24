@@ -8,12 +8,14 @@ import { Post } from './entities/post.entity';
 import { commentProviders } from './providers/comment.providers';
 import { postProviders } from './providers/post.providers';
 import { postMediaProviders } from './providers/postMedia.providers';
+import { tagProviders } from './providers/tag.provider';
 import { PostsService } from './service/posts/posts.service';
 
 @Module({
   imports: [DatabaseModule],
   controllers: [PostsController],
   providers: [
+    ...tagProviders,
     ...postMediaProviders,
     ...commentProviders,
     ...postProviders,

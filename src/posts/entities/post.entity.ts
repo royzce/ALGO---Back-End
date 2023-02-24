@@ -6,6 +6,7 @@ import { JoinColumn } from 'typeorm/decorator/relations/JoinColumn';
 import { ManyToOne } from 'typeorm/decorator/relations/ManyToOne';
 import { Comment } from './comment.entity';
 import { Media } from './media.entity';
+import { Tag } from './tags.entity';
 
 @Entity()
 export class Post {
@@ -48,4 +49,7 @@ export class Post {
 
   @OneToMany(() => Share, (share) => share.post)
   shares: Share[];
+
+  @OneToMany(() => Tag, (tag) => tag.post)
+  tags: Tag[];
 }

@@ -1,17 +1,16 @@
 import {
-  ManyToOne,
-  Column,
   Entity,
-  PrimaryGeneratedColumn,
+  Column,
   JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import {} from 'typeorm/decorator/relations/ManyToOne';
 import { Post } from './post.entity';
 
 @Entity()
-export class Media {
+export class Tag {
   @PrimaryGeneratedColumn()
-  mediaId: number;
+  tagId: number;
 
   @Column()
   postId: number;
@@ -20,9 +19,9 @@ export class Media {
   userId: number;
 
   @Column()
-  mediaLink: string;
+  taggedUsers: string;
 
-  @ManyToOne(() => Post, (post) => post.media)
+  @ManyToOne(() => Post, (post) => post.tags)
   @JoinColumn({ name: 'postId' })
   post: Post;
 }
