@@ -1,3 +1,4 @@
+import { Friend } from 'src/friends/entities/friend.entity';
 import { Comment } from 'src/posts/entities/comment.entity';
 import { Media } from 'src/posts/entities/media.entity';
 import { Post } from 'src/posts/entities/post.entity';
@@ -15,7 +16,16 @@ export const databaseProviders = [
       await createConnection({
         type: 'sqlite',
         database: './algo.sqlite',
-        entities: [Post, UserProfile, Media, Reaction, Comment, Share, Tag],
+        entities: [
+          Post,
+          UserProfile,
+          Media,
+          Reaction,
+          Comment,
+          Share,
+          Tag,
+          Friend,
+        ],
         synchronize: true,
       }),
   },

@@ -7,6 +7,7 @@ import { PostsModule } from './posts/posts.module';
 import { MailerModule } from './mailer/mailer.module';
 import { DatabaseModule } from './database/database.module';
 import { SharesModule } from './shares/shares.module';
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
   imports: [
@@ -19,8 +20,7 @@ import { SharesModule } from './shares/shares.module';
     PostsModule,
     DatabaseModule,
     SharesModule,
+    FriendsModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}

@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { Friend } from 'src/friends/entities/friend.entity';
 import { Comment } from 'src/posts/entities/comment.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
@@ -42,6 +43,9 @@ export class UserProfile {
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
+
+  @OneToMany(() => Friend, (friend) => friend.user)
+  friend: Friend[];
 
   //Commented out to fix database constraint
   // @OneToMany(() => Comment, (comment) => comment.userProfile)
