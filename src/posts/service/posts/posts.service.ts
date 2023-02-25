@@ -238,5 +238,8 @@ export class PostsService {
     } catch (error) {
       throw new HttpException('Edit Failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    console.log(comment);
+    return comment;
   }
 }

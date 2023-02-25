@@ -11,8 +11,8 @@ export class EditPostDto {
   @ApiProperty({ type: 'boolean' })
   isRepost: boolean;
 
-  @ApiProperty({ minLength: 1 })
-  @MinLength(1)
+  @ApiProperty({ type: 'string', required: false })
+  @IsOptional()
   value: string;
 
   @ApiProperty({ type: 'number' })

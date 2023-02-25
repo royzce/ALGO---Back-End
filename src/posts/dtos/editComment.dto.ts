@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class EditCommentDto {
-  @ApiProperty({ minLength: 1 })
-  @IsNotEmpty()
+  @ApiProperty({ type: 'string', required: false })
+  @IsOptional()
   value: string;
 }
