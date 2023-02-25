@@ -33,4 +33,15 @@ export class AuthService {
 
     throw new BadRequestException('Invalid username / password.');
   }
+  //   function setWithExpiry(key, value, expiration) {
+  //     const now = new Date()
+
+  //     // `item` is an object which contains the original value
+  //     // as well as the time when it's supposed to expire
+  //     const item = {
+  //         value: value,
+  //         expiry: now.getTime() + expiration,
+  //     }
+  //     localStorage.setItem(key, JSON.stringify(item))
+  // }
 }
