@@ -17,9 +17,16 @@ export class UsersService {
     let user = await this.userProfileRepository.findOne({
       where: { username: userDto.username },
     });
+    const emailExist = await this.userProfileRepository.findOne({
+      where: { email: userDto.email },
+    });
     if (user) {
-      throw new HttpException('username taken', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Username taken', HttpStatus.BAD_REQUEST);
     }
+    if (emailExist) {
+      throw new HttpException('Email taken', HttpStatus.BAD_REQUEST);
+    }
+
     user = new UserProfile();
     user.username = userDto.username;
     user.firstName = userDto.firstName;
