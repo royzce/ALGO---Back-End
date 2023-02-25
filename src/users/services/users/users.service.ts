@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Like } from 'typeorm/find-options/operator/Like';
 import { Interest } from 'src/users/entities/interest.entity';
+import { use } from 'passport';
+import { Not } from 'typeorm/find-options/operator/Not';
 
 @Injectable()
 export class UsersService {
@@ -14,16 +16,20 @@ export class UsersService {
   ) {}
 
   async createNewUser(userDto: createUserProfileDto) {
-    let user = await this.userProfileRepository.findOne({
-      where: { username: userDto.username },
-    });
-    if (user) {
+    let user = new UserProfile();
+    if ((await this.validateUsername(userDto.username)) === 'taken') {
       throw new HttpException('username taken', HttpStatus.BAD_REQUEST);
     }
-    user = new UserProfile();
     user.username = userDto.username;
     user.firstName = userDto.firstName;
     user.lastName = userDto.lastName;
+
+    if ((await this.validateEmail(userDto.email)) === 'taken') {
+      throw new HttpException(
+        'Email is already in use',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     user.email = userDto.email;
     const saltOrRounds = 10;
     user.password = await bcrypt.hash(userDto.password, saltOrRounds);
@@ -32,7 +38,16 @@ export class UsersService {
     user.bio = '';
     user.interest = [];
 
-    user = await this.userProfileRepository.save(user);
+    try {
+      user = await this.userProfileRepository.save(user);
+    } catch (error) {
+      throw new HttpException(
+        'Registration Failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return user;
   }
 
   async findOne(username: string): Promise<UserProfile> {
@@ -70,5 +85,28 @@ export class UsersService {
       where: { userId: id },
       relations: ['interest'],
     });
+  }
+
+  async validateUsername(username: string) {
+    let user = await this.userProfileRepository.findOne({
+      where: { username: username },
+    });
+    console.log('from user', user);
+    if (user) {
+      return 'taken';
+    }
+    return 'available';
+  }
+
+  async validateEmail(email: string) {
+    let user = await this.userProfileRepository.findOne({
+      where: { email: email },
+    });
+    console.log('from email', user);
+
+    if (user) {
+      return 'taken';
+    }
+    return 'available';
   }
 }
