@@ -30,7 +30,6 @@ export class UsersService {
     user.avatar = userDto.avatar;
     user.cover = '';
     user.bio = '';
-    user.friends = '';
     user.interest = [];
 
     user = await this.userProfileRepository.save(user);

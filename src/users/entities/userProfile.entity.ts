@@ -36,14 +36,11 @@ export class UserProfile {
   @Column()
   bio: string;
 
-  @Column()
-  friends: string;
-
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
 
   @OneToMany(() => Friend, (friend) => friend.user)
-  friend: Friend[];
+  friends: Friend[];
 
   @OneToMany(() => Interest, (_interest) => _interest.user)
   interest: Interest[];

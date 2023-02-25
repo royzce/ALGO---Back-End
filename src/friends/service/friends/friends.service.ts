@@ -5,10 +5,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { AddFriendDto } from 'src/friends/dtos/addFriend.dto';
 import { Friend } from 'src/friends/entities/friend.entity';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
-import { Brackets } from 'typeorm/query-builder/Brackets';
 import { Repository } from 'typeorm/repository/Repository';
 
 @Injectable()
