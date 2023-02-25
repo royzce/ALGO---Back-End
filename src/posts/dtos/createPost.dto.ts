@@ -23,8 +23,13 @@ export class CreatePostDto {
   @IsNotEmpty()
   privacy: string;
 
-  @ApiProperty({ type: 'boolean' })
-  isEdited: boolean;
+  @ApiProperty({ type: Array })
+  @IsOptional()
+  media: string[];
+
+  @ApiProperty({ type: Array })
+  @IsOptional()
+  tags: string[];
 
   @ApiProperty({ type: Date })
   date: Date;

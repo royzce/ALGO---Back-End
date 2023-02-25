@@ -23,11 +23,11 @@ export class EditPostDto {
   @IsNotEmpty()
   privacy: string;
 
-  // @ApiProperty({type: 'string'})
-  // media: media[]
+  @ApiProperty({ type: Array })
+  media: string[];
 
-  @ApiProperty({ type: 'string' })
-  tags: string;
+  @ApiProperty({ type: Array })
+  tags: string[];
 
   @ApiProperty({ type: Date })
   date: Date;

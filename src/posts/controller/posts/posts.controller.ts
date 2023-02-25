@@ -28,23 +28,11 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Get()
   getAllPosts(@Request() req) {
-    console.log('test', req);
     return this.postService.getAllPost();
   }
 
   @Post()
-  addPost(@Body() body: any, @Request() req) {
-    console.log(body);
-    const createPostDto: CreatePostDto = {
-      isRepost: body.isRepost,
-      value: body.value,
-      repostId: body.repostId,
-      privacy: body.privacy,
-      isEdited: false,
-      date: body.date,
-    };
-
-    //add img, tags, reactions, likes
+  addPost(@Body() createPostDto: CreatePostDto, @Request() req) {
     return this.postService.createNewPost(createPostDto, req.user.userId);
   }
 

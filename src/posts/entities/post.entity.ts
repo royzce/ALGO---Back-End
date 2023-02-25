@@ -1,9 +1,12 @@
 import { Reaction } from 'src/reactions/entities/reaction.entity';
+import { Share } from 'src/shares/entities/share.entity';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { JoinColumn } from 'typeorm/decorator/relations/JoinColumn';
 import { ManyToOne } from 'typeorm/decorator/relations/ManyToOne';
 import { Comment } from './comment.entity';
+import { Media } from './media.entity';
+import { Tag } from './tags.entity';
 
 @Entity()
 export class Post {
@@ -31,9 +34,6 @@ export class Post {
   @Column()
   date: Date;
 
-  @Column()
-  tags: string;
-
   @ManyToOne(() => UserProfile, (user) => user.posts)
   @JoinColumn({ name: 'userId' })
   user: UserProfile;
@@ -43,4 +43,13 @@ export class Post {
 
   @OneToMany(() => Comment, (comment) => comment.post)
   comment: Comment[];
+
+  @OneToMany(() => Media, (media) => media.post)
+  media: Media[];
+
+  @OneToMany(() => Share, (share) => share.post)
+  shares: Share[];
+
+  @OneToMany(() => Tag, (tag) => tag.post)
+  tags: Tag[];
 }

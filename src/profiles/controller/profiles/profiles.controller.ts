@@ -26,6 +26,11 @@ export class ProfilesController {
     return this.profileService.getUsersByName(q);
   }
 
+  @Get('/photos')
+  getAllPhotos(@Request() req) {
+    return this.profileService.getAllPhotos(req.user.userId);
+  }
+
   @Get(':username')
   getUserProfile(@Param('username') username: string) {
     return this.profileService.findProfile(username);

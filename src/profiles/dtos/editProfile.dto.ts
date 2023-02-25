@@ -9,22 +9,22 @@ import {
 
 export class EditUserProfileDto {
   @ApiProperty({ minLength: 5, maxLength: 15 })
-  @IsNotEmpty()
+  @IsOptional()
   @MinLength(5)
   @MaxLength(15)
   username: string;
 
   @ApiProperty({ type: 'string' })
-  @IsEmail()
+  @IsOptional()
   email: string;
 
-  @ApiProperty({ required: true, maxLength: 30 })
-  @IsNotEmpty()
+  @ApiProperty({ required: false, maxLength: 30 })
+  @IsOptional()
   @MaxLength(50)
   firstName: string;
 
-  @ApiProperty({ required: true, maxLength: 30 })
-  @IsNotEmpty()
+  @ApiProperty({ required: false, maxLength: 30 })
+  @IsOptional()
   @MaxLength(50)
   lastName: string;
 
@@ -39,4 +39,8 @@ export class EditUserProfileDto {
   @ApiProperty({ required: false, type: 'string' })
   @IsOptional()
   bio: string;
+
+  @ApiProperty({ required: false, type: Array })
+  @IsOptional()
+  interest: string[];
 }
