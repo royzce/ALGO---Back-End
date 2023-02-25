@@ -108,8 +108,6 @@ export class PostsService {
       throw new NotFoundException('Post not found');
     }
 
-    console.log(post);
-
     let comment = new Comment();
 
     comment.value = addCommentDto.value;
@@ -120,7 +118,7 @@ export class PostsService {
     comment.userId = userId;
     comment = await this.commentRepository.save(comment);
 
-    return comment;
+    return this.getComments(id);
   }
 
   async deletePost(id: number) {
@@ -154,7 +152,7 @@ export class PostsService {
   async getComments(id: number): Promise<Comment[]> {
     const comments = await this.commentRepository.find({
       where: { postId: id },
-      relations: ['userProfile'],
+      relations: ['userPofile'],
     });
 
     return comments;
@@ -260,6 +258,6 @@ export class PostsService {
     }
 
     console.log(comment);
-    return comment;
+    return this.getComments(postId);
   }
 }

@@ -44,4 +44,7 @@ export class UserProfile {
 
   @OneToMany(() => Interest, (_interest) => _interest.user)
   interest: Interest[];
+
+  @OneToMany(() => Comment, (comment) => comment.userPofile)
+  comment: Comment[];
 }
