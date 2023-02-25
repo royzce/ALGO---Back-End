@@ -4,6 +4,7 @@ import { UserProfile } from 'src/users/entities/userProfile.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Like } from 'typeorm/find-options/operator/Like';
+import { Interest } from 'src/users/entities/interest.entity';
 
 @Injectable()
 export class UsersService {
@@ -30,7 +31,7 @@ export class UsersService {
     user.cover = '';
     user.bio = '';
     user.friends = '';
-    user.interest = '';
+    user.interest = [];
 
     user = await this.userProfileRepository.save(user);
   }
@@ -66,6 +67,9 @@ export class UsersService {
   }
 
   async getUserInfo(id: number): Promise<UserProfile> {
-    return this.userProfileRepository.findOneBy({ userId: id });
+    return this.userProfileRepository.findOne({
+      where: { userId: id },
+      relations: ['interest'],
+    });
   }
 }

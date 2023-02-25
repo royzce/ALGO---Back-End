@@ -9,6 +9,7 @@ import { userProfileProviders } from 'src/users/providers/userProfile.providers'
 import { UsersService } from 'src/users/services/users/users.service';
 import { DatabaseModule } from 'src/database/database.module';
 import { UsersModule } from 'src/users/users.module';
+import { interestProviders } from 'src/users/providers/interest.providers';
 
 @Module({
   imports: [
@@ -20,7 +21,13 @@ import { UsersModule } from 'src/users/users.module';
       signOptions: { expiresIn: '100d' },
     }),
   ],
-  providers: [AuthService, JwtStrategy, UsersService, ...userProfileProviders],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    UsersService,
+    ...userProfileProviders,
+    ...interestProviders,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

@@ -7,6 +7,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { JwtStrategy } from 'src/auth/jwt.strategy';
 import { DatabaseModule } from 'src/database/database.module';
 import { UsersController } from './controllers/users/users.controller';
+import { interestProviders } from './providers/interest.providers';
 import { userProfileProviders } from './providers/userProfile.providers';
 import { UsersService } from './services/users/users.service';
 
@@ -21,6 +22,7 @@ import { UsersService } from './services/users/users.service';
   ],
   controllers: [UsersController],
   providers: [
+    ...interestProviders,
     ...userProfileProviders,
     UsersService,
     AuthService,
