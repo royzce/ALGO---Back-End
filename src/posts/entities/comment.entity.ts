@@ -33,10 +33,9 @@ export class Comment {
   @Column()
   date: Date;
 
-  //Commented out to fix database constraint
-  // @ManyToOne(() => UserProfile, (user) => user.comment)
-  // @JoinColumn({ name: 'commentId' })
-  // userProfile: UserProfile;
+  @ManyToOne(() => UserProfile, (user) => user.comment)
+  @JoinColumn({ name: 'commentId' })
+  userPofile: UserProfile;
 
   @ManyToOne(() => Post, (post) => post.comment)
   @JoinColumn({ name: 'postId' })
