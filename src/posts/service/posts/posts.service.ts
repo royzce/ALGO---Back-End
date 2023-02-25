@@ -190,6 +190,7 @@ export class PostsService {
 
     let post = await this.postRepository.findOne({
       where: { postId: _postId },
+      relations: ['media'],
     });
 
     if (!post) {
@@ -200,10 +201,29 @@ export class PostsService {
     post.privacy = editPostDto.privacy || post.privacy;
     post.value = editPostDto.value || post.value;
     post.isEdited = true;
-
     post.isRepost = editPostDto.isRepost || post.isRepost;
 
+    await Promise.all(
+      post.media.map((_media) => this.postMediaRepository.remove(_media)),
+    );
+
     post = await this.postRepository.save(post);
+
+    if (editPostDto.media) {
+      for (const m of editPostDto.media) {
+        let media = new Media();
+
+        media.userId = userId;
+        media.postId = post.postId;
+        media.mediaLink = m;
+
+        try {
+          media = await this.postMediaRepository.save(media);
+        } catch (error) {
+          throw new InternalServerErrorException();
+        }
+      }
+    }
 
     return this.getPost(_postId);
   }
@@ -238,5 +258,8 @@ export class PostsService {
     } catch (error) {
       throw new HttpException('Edit Failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    console.log(comment);
+    return comment;
   }
 }
