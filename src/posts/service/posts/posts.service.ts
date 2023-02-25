@@ -204,11 +204,8 @@ export class PostsService {
     post.isRepost = editPostDto.isRepost || post.isRepost;
 
     post = await this.postRepository.save(post);
-    console.log(user);
 
-    console.log(post);
-
-    return 'saved';
+    return this.getPost(_postId);
   }
 
   async editComment(
