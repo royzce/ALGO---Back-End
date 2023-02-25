@@ -8,6 +8,7 @@ import { MailerModule } from './mailer/mailer.module';
 import { DatabaseModule } from './database/database.module';
 import { SharesModule } from './shares/shares.module';
 import { FriendsModule } from './friends/friends.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { FriendsModule } from './friends/friends.module';
     DatabaseModule,
     SharesModule,
     FriendsModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}

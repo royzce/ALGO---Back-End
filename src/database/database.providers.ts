@@ -1,4 +1,5 @@
 import { Friend } from 'src/friends/entities/friend.entity';
+import { Notification } from 'src/notifications/entities/notifications.entity';
 import { Comment } from 'src/posts/entities/comment.entity';
 import { Media } from 'src/posts/entities/media.entity';
 import { Post } from 'src/posts/entities/post.entity';
@@ -27,6 +28,7 @@ export const databaseProviders = [
           Tag,
           Friend,
           Interest,
+          Notification,
         ],
         synchronize: true,
       }),
