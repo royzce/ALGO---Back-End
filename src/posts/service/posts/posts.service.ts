@@ -16,6 +16,7 @@ import { Media } from 'src/posts/entities/media.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { Tag } from 'src/posts/entities/tags.entity';
 import { Reaction } from 'src/reactions/entities/reaction.entity';
+import { Share } from 'src/shares/entities/share.entity';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
 import { Repository } from 'typeorm';
 
@@ -32,6 +33,10 @@ export class PostsService {
     private userProfileRepository: Repository<UserProfile>,
     @Inject('COMMENT_REPOSITORY')
     private commentRepository: Repository<Comment>,
+    @Inject('SHARE_REPOSITORY')
+    private shareRepository: Repository<Share>,
+    @Inject('REACTION_REPOSITORY')
+    private reactionRepository: Repository<Reaction>,
   ) {}
 
   async createNewPost(
@@ -121,10 +126,27 @@ export class PostsService {
   async deletePost(id: number) {
     const post = await this.postRepository.findOne({
       where: { postId: id },
+      relations: ['tags', 'shares', 'media', 'comment', 'reactions'],
     });
     if (!post) {
       throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
     }
+
+    await Promise.all(post.tags.map((tag) => this.tagRepository.remove(tag)));
+    await Promise.all(
+      post.shares.map((share) => this.shareRepository.remove(share)),
+    );
+    await Promise.all(
+      post.media.map((media) => this.postMediaRepository.remove(media)),
+    );
+    await Promise.all(
+      post.comment.map((comment) => this.commentRepository.remove(comment)),
+    );
+    await Promise.all(
+      post.reactions.map((reaction) =>
+        this.reactionRepository.remove(reaction),
+      ),
+    );
     await this.postRepository.remove(post);
     return { ...post, id };
   }
