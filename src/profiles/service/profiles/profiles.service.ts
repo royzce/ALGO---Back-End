@@ -11,11 +11,15 @@ import { Post } from 'src/posts/entities/post.entity';
 import { EditUserProfileDto } from 'src/profiles/dtos/editProfile.dto';
 import { Interest } from 'src/users/entities/interest.entity';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
+import { UsersService } from 'src/users/services/users/users.service';
 import { Like, Repository } from 'typeorm';
+import { Not } from 'typeorm/find-options/operator/Not';
 
 @Injectable()
 export class ProfilesService {
   constructor(
+    private userService: UsersService,
+
     @Inject('INTEREST_REPOSITORY')
     private interestRepository: Repository<Interest>,
     @Inject('USERPROFILE_REPOSITORY')
@@ -63,7 +67,7 @@ export class ProfilesService {
   async editProfile(
     userId,
     editProfileDto: EditUserProfileDto,
-  ): Promise<string> {
+  ): Promise<UserProfile> {
     let user = await this.userProfileRepository.findOne({
       where: { userId: userId },
     });
@@ -71,7 +75,19 @@ export class ProfilesService {
     if (!user) {
       throw new HttpException('user not found', HttpStatus.BAD_REQUEST);
     }
-    // user.email = (await this.validateEmail(editProfileDto.email)) || user.email;
+
+    if (
+      (await this.validateUsername(editProfileDto.username, userId)) === 'taken'
+    ) {
+      throw new HttpException('username taken', HttpStatus.BAD_REQUEST);
+    }
+
+    if ((await this.validateEmail(editProfileDto.email, userId)) === 'taken') {
+      throw new HttpException(
+        'Email is already in use',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     user.email = editProfileDto.email || user.email;
     user.username = editProfileDto.username || user.username;
@@ -80,6 +96,10 @@ export class ProfilesService {
     user.avatar = editProfileDto.avatar || user.avatar;
     user.cover = editProfileDto.cover || user.cover;
     user.bio = editProfileDto.bio || user.bio;
+
+    if (editProfileDto.interest) {
+      await this.interestRepository.delete({ userId });
+    }
 
     if (editProfileDto.interest) {
       editProfileDto.interest.forEach(async (i) => {
@@ -98,19 +118,8 @@ export class ProfilesService {
 
     user = await this.userProfileRepository.save(user);
 
-    return 'Saved!';
+    return this.userService.getUserInfo(userId);
   }
-
-  // validateEmail = async (email) => {
-  //   let user = await this.userProfileRepository.findOne({
-  //     where: { email: email },
-  //   });
-
-  //   if (!user) {
-  //     return email;
-  //   }
-  //   throw new HttpException('Email is already in use', HttpStatus.UNAUTHORIZED);
-  // };
 
   async getAllPhotos(_userId: number): Promise<Media[]> {
     console.log(_userId);
@@ -120,5 +129,28 @@ export class ProfilesService {
     console.log(photos);
 
     return photos;
+  }
+
+  async validateUsername(username: string, userId: number) {
+    let user = await this.userProfileRepository.findOne({
+      where: { username: username, userId: Not(userId) },
+    });
+    console.log('from user', user);
+    if (user) {
+      return 'taken';
+    }
+    return 'available';
+  }
+
+  async validateEmail(email: string, userId: number) {
+    let user = await this.userProfileRepository.findOne({
+      where: { email: email, userId: Not(userId) },
+    });
+    console.log('from email', user);
+
+    if (user) {
+      return 'taken';
+    }
+    return 'available';
   }
 }
