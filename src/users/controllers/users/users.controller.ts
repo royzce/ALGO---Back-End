@@ -32,4 +32,17 @@ export class UsersController {
   getProfile(@Request() req) {
     return this.userService.getUserInfo(req.user.userId);
   }
+
+  @Get('/token')
+  getTokens() {
+    return this.userService.getBlacklistedTokens();
+  }
+
+  // @Post('/token')
+  // addTokenToBlacklist() {
+  //   const token = {
+  //     token: 'TOKEN_TESTING',
+  //   };
+  //   return this.userService.addTokenToBlacklist(token);
+  // }
 }
