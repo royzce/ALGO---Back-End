@@ -110,10 +110,12 @@ export class AuthService {
 
         // Return a success response
         return { ResetPasswordResponse: 'Password reset successful' };
+      } else {
+        return true;
       }
     } catch (error) {
       // If the token is invalid or expired, return an error response
-      throw new BadRequestException('Invalid or expired token');
+      throw new BadRequestException('Expired or invalid link');
     }
   }
 }

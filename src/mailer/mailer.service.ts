@@ -25,14 +25,13 @@ export class MailerService {
       to,
       subject: 'Password reset link for ALGO',
       html:
-        `<p>Dear <strong>${name}</strong>,</p>` +
-        `<p>We have received a request to reset the password for your <strong>Algo account</strong> associated with this email address. If you did not make this request, please disregard this email.</p>` +
-        `<p>To reset your password, please click on the following link within the next hour:</p>` +
-        ` <p><a href="http://localhost:3000/reset-password/${token}">localhost:3000/change-password/.....</a></p>` +
+        `<p>Hi <strong>${name}</strong>,</p>` +
+        `<p>We received a request to reset the password for your <strong>Algo account</strong>. If you did not make this request, please disregard this email.</p>` +
+        `<p>To reset your password, please click on the following link:</p>` +
+        ` <p><a href="http://localhost:3000/reset-password/${token}">localhost:3000/change-password/...</a></p>` +
         ` <p>Please note that this link will expire in an hour, so please reset your password as soon as possible.</p>` +
-        `<p>If you experience any issues with resetting your password or believe this request was made in error, please contact our customer support team at support@algo.com.</p>` +
         `    <p>Thank you for using Algo!</p>` +
-        `<p>Best regards,<br><strong>Algo Team</strong></p>`,
+        `<p>Best regards,<br><strong>Algo</strong></p>`,
     };
 
     return await this.transporter.sendMail(mailOptions);
