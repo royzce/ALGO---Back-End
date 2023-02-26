@@ -34,8 +34,8 @@ export class Comment {
   date: Date;
 
   @ManyToOne(() => UserProfile, (user) => user.comment)
-  @JoinColumn({ name: 'commentId' })
-  userPofile: UserProfile;
+  @JoinColumn({ name: 'userId' })
+  user: UserProfile;
 
   @ManyToOne(() => Post, (post) => post.comment)
   @JoinColumn({ name: 'postId' })
