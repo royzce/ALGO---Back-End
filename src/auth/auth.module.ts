@@ -10,23 +10,31 @@ import { UsersService } from 'src/users/services/users/users.service';
 import { DatabaseModule } from 'src/database/database.module';
 import { UsersModule } from 'src/users/users.module';
 import { interestProviders } from 'src/users/providers/interest.providers';
+import { MailerService } from 'src/mailer/mailer.service';
+import { MailerModule } from 'src/mailer/mailer.module';
+import { ConfigModule } from '@nestjs/config';
+import { blacklistedTokensProviders } from 'src/users/providers/blacklistedToken.providers';
 
 @Module({
   imports: [
     DatabaseModule,
     UsersModule,
+    ConfigModule.forRoot(),
+    MailerModule,
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '100d' },
+      signOptions: { expiresIn: '1h' },
     }),
   ],
   providers: [
     AuthService,
     JwtStrategy,
     UsersService,
+    MailerService,
     ...userProfileProviders,
     ...interestProviders,
+    ...blacklistedTokensProviders,
   ],
   controllers: [AuthController],
 })

@@ -1,13 +1,20 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { UsersService } from 'src/users/services/users/users.service';
+import { MailerService } from 'src/mailer/mailer.service';
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private mailerService: MailerService,
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
@@ -31,17 +38,82 @@ export class AuthService {
       };
     }
 
-    throw new BadRequestException('Invalid username / password.');
+    throw new BadRequestException('Invalid username or password');
   }
-  //   function setWithExpiry(key, value, expiration) {
-  //     const now = new Date()
 
-  //     // `item` is an object which contains the original value
-  //     // as well as the time when it's supposed to expire
-  //     const item = {
-  //         value: value,
-  //         expiry: now.getTime() + expiration,
-  //     }
-  //     localStorage.setItem(key, JSON.stringify(item))
-  // }
+  async forgotPassword(email: string): Promise<boolean> {
+    const user = await this.usersService.getUserByEmail(email);
+    if (!user) {
+      throw new BadRequestException(
+        'This email address is not associated with any user.',
+      );
+    }
+    const token = this.jwtService.sign(
+      { email: user.email },
+      { expiresIn: '1h' },
+    );
+
+    try {
+      await this.mailerService.sendResetPasswordEmail(
+        user.email,
+        token,
+        user.firstName,
+      );
+      return true;
+    } catch (err) {
+      throw new InternalServerErrorException(
+        'Failed to send reset password email',
+      );
+    }
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    try {
+      // Verify the token using the JwtService
+      const decodedToken = this.jwtService.verify(token, {
+        ignoreExpiration: false,
+      });
+      const { email, exp } = decodedToken;
+      // Check if the token is valid and not expired
+      if (!email) {
+        throw new BadRequestException('Invalid token');
+      }
+
+      // Check if token is in blacklist
+      const isBlacklistedToken =
+        await this.usersService.checkIfTokenIsInBlacklist(token);
+      if (isBlacklistedToken) {
+        throw new BadRequestException(
+          'This link is already used to reset password.',
+        );
+      }
+      // Find the user with the specified email
+      const user = await this.usersService.getUserByEmail(email);
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+
+      if (newPassword) {
+        // Update the user's password in the database
+        const saltOrRounds = 10;
+        user.password = await bcrypt.hash(newPassword, saltOrRounds);
+        await this.usersService.updateUser(user);
+
+        // Invalidate the token in the database
+        // ...
+        const tokenExpiration: string = new Date(exp * 1000).toISOString();
+        const tokenInfo = {
+          tokenValue: token,
+          exp: tokenExpiration,
+        };
+        this.usersService.addTokenToBlacklist(tokenInfo);
+
+        // Return a success response
+        return { ResetPasswordResponse: 'Password reset successful' };
+      }
+    } catch (error) {
+      // If the token is invalid or expired, return an error response
+      throw new BadRequestException('Invalid or expired token');
+    }
+  }
 }

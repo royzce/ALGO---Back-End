@@ -2,28 +2,25 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
-  Get,
   Post,
-  Req,
-  Request,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
 import { UsersService } from 'src/users/services/users/users.service';
 import { AuthService } from './auth.service';
+import { ForgotPasswordDto } from './dto/forgot.password.dto';
 import { LoginDto } from './dto/login.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { ResetPasswordDto } from './dto/reset.password.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UsersService,
   ) {}
 
-  @Post('auth')
+  @Post()
   async login(@Body() loginDto: LoginDto) {
     const user = new UserProfile();
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -37,5 +34,18 @@ export class AuthController {
     }
     user.password = loginDto.password;
     return this.authService.login(user);
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto.email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(
+      resetPasswordDto.token,
+      resetPasswordDto.password,
+    );
   }
 }
