@@ -102,7 +102,11 @@ export class PostsService {
     return allPosts;
   }
 
-  async addComment(id, addCommentDto: AddCommentDto, userId: number) {
+  async addComment(
+    id,
+    addCommentDto: AddCommentDto,
+    userId: number,
+  ): Promise<Comment[]> {
     const post = await this.postRepository.findOne({ where: { postId: id } });
     if (!post) {
       throw new NotFoundException('Post not found');
@@ -231,7 +235,7 @@ export class PostsService {
     postId: number,
     commentId: number,
     editCommentDto: EditCommentDto,
-  ) {
+  ): Promise<Comment[]> {
     let user = await this.userProfileRepository.findOne({
       where: { userId: userId },
     });
@@ -257,7 +261,6 @@ export class PostsService {
       throw new HttpException('Edit Failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    console.log(comment);
     return this.getComments(postId);
   }
 }
