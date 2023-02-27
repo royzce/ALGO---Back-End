@@ -58,15 +58,30 @@ export class FriendsService {
     return 'accepted';
   }
 
-  async getFriendList(userId: number) {
+  async getFriendList(userId: number): Promise<UserProfile[]> {
     const friends = await this.friendRepository
       .createQueryBuilder('friend')
-      .leftJoinAndSelect('friend.user', 'user')
       .where([
         { status: 'friends', userId: userId },
         { status: 'friends', friendId: userId },
       ])
       .getMany();
-    return friends;
+
+    const user: UserProfile[] = [];
+
+    for (let friend of friends) {
+      user.push(await this.getFriend(friend.userId));
+      user.push(await this.getFriend(friend.friendId));
+    }
+
+    let friendList = user.filter((user) => user.userId !== userId);
+    return friendList;
+  }
+
+  async getFriend(friendId: number): Promise<UserProfile> {
+    let user = await this.userProfileRepository.findOne({
+      where: { userId: friendId },
+    });
+    return user;
   }
 }

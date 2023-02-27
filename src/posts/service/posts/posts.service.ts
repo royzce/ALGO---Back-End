@@ -6,7 +6,6 @@ import {
   NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
 import { EditCommentDto } from 'src/posts/dtos/editComment.dto';
