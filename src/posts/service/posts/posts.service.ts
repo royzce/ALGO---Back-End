@@ -11,6 +11,7 @@ import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
 import { EditCommentDto } from 'src/posts/dtos/editComment.dto';
 import { EditPostDto } from 'src/posts/dtos/editPost.dto';
+import { EditPrivacyDto } from 'src/posts/dtos/editPrivacy.dto';
 import { Comment } from 'src/posts/entities/comment.entity';
 import { Media } from 'src/posts/entities/media.entity';
 import { Post } from 'src/posts/entities/post.entity';
@@ -263,5 +264,43 @@ export class PostsService {
     }
 
     return this.getComments(postId);
+  }
+
+  async updatePrivacy(
+    _userId: number,
+    _postId: number,
+    editPrivacyDto: EditPrivacyDto,
+  ) {
+    const user = await this.userProfileRepository.findOne({
+      where: { userId: _userId },
+    });
+
+    if (!user) {
+      throw new HttpException(
+        'Unable to update privacy',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    let post = await this.postRepository.findOne({
+      where: { postId: _postId },
+    });
+
+    if (!post) {
+      throw new HttpException('Post not found', HttpStatus.BAD_REQUEST);
+    }
+
+    post.privacy = editPrivacyDto.privacy || post.privacy;
+
+    try {
+      post = await this.postRepository.save(post);
+    } catch (error) {
+      throw new HttpException(
+        'Unable to update privacy',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return this.getPost(_postId);
   }
 }
