@@ -33,10 +33,10 @@ export class UsersController {
     return this.userService.getUserInfo(req.user.userId);
   }
 
-  @Get('/token')
-  getTokens() {
-    return this.userService.getBlacklistedTokens();
-  }
+  // @Get('/token')
+  // getTokens() {
+  //   return this.userService.findPwdResetToken();
+  // }
 
   // @Post('/token')
   // addTokenToBlacklist() {

@@ -13,7 +13,7 @@ import { interestProviders } from 'src/users/providers/interest.providers';
 import { MailerService } from 'src/mailer/mailer.service';
 import { MailerModule } from 'src/mailer/mailer.module';
 import { ConfigModule } from '@nestjs/config';
-import { blacklistedTokensProviders } from 'src/users/providers/blacklistedToken.providers';
+import { passwordResetTokenProviders } from 'src/users/providers/password-reset-token.providers';
 
 @Module({
   imports: [
@@ -34,7 +34,7 @@ import { blacklistedTokensProviders } from 'src/users/providers/blacklistedToken
     MailerService,
     ...userProfileProviders,
     ...interestProviders,
-    ...blacklistedTokensProviders,
+    ...passwordResetTokenProviders,
   ],
   controllers: [AuthController],
 })

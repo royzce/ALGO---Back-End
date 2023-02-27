@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { DatabaseModule } from 'src/database/database.module';
 import { postProviders } from 'src/posts/providers/post.providers';
 import { postMediaProviders } from 'src/posts/providers/postMedia.providers';
-import { blacklistedTokensProviders } from 'src/users/providers/blacklistedToken.providers';
 import { interestProviders } from 'src/users/providers/interest.providers';
+import { passwordResetTokenProviders } from 'src/users/providers/password-reset-token.providers';
 import { userProfileProviders } from 'src/users/providers/userProfile.providers';
 import { UsersService } from 'src/users/services/users/users.service';
 import { ProfilesController } from './controller/profiles/profiles.controller';
@@ -16,7 +16,7 @@ import { ProfilesService } from './service/profiles/profiles.service';
     ...interestProviders,
     ...postMediaProviders,
     ...userProfileProviders,
-    ...blacklistedTokensProviders,
+    ...passwordResetTokenProviders,
     ...postProviders,
     ProfilesService,
     UsersService,

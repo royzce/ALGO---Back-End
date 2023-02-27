@@ -41,7 +41,12 @@ export class AuthService {
     throw new BadRequestException('Invalid username or password');
   }
 
-  async forgotPassword(email: string): Promise<boolean> {
+  getDatePlusOneHour(): string {
+    const currentDate = new Date();
+    const oneHourLater = new Date(currentDate.getTime() + 60 * 60 * 1000);
+    return oneHourLater.toISOString();
+  }
+  async forgotPassword(email: string) {
     const user = await this.usersService.getUserByEmail(email);
     if (!user) {
       throw new BadRequestException(
@@ -53,18 +58,24 @@ export class AuthService {
       { expiresIn: '1h' },
     );
 
-    try {
-      await this.mailerService.sendResetPasswordEmail(
-        user.email,
-        token,
-        user.firstName,
-      );
-      return true;
-    } catch (err) {
-      throw new InternalServerErrorException(
-        'Failed to send reset password email',
-      );
-    }
+    const tokenInfo = {
+      email: user.email,
+      tokenValue: token,
+      exp: this.getDatePlusOneHour(),
+    };
+
+    await this.mailerService
+      .sendResetPasswordEmail(user.email, token, user.firstName)
+      .then(() => {
+        this.usersService.addResetTokenTodb(tokenInfo);
+        //successfully sends email
+        return true;
+      })
+      .catch((err) => {
+        throw new InternalServerErrorException(
+          'Failed to send reset password email',
+        );
+      });
   }
 
   async resetPassword(token: string, newPassword: string) {
@@ -79,13 +90,13 @@ export class AuthService {
         throw new BadRequestException('Invalid token');
       }
 
-      // Check if token is in blacklist
-      const isBlacklistedToken =
-        await this.usersService.checkIfTokenIsInBlacklist(token);
-      if (isBlacklistedToken) {
-        throw new BadRequestException(
-          'This link is already used to reset password.',
-        );
+      // Check if user requested to change pwd, by looking it in db
+      const isRequested = await this.usersService.checkIfResetPwdTokenIsInDB(
+        token,
+      );
+
+      if (!isRequested) {
+        throw new BadRequestException('Expired or Invalid Link');
       }
       // Find the user with the specified email
       const user = await this.usersService.getUserByEmail(email);
@@ -101,12 +112,6 @@ export class AuthService {
 
         // Invalidate the token in the database
         // ...
-        const tokenExpiration: string = new Date(exp * 1000).toISOString();
-        const tokenInfo = {
-          tokenValue: token,
-          exp: tokenExpiration,
-        };
-        this.usersService.addTokenToBlacklist(tokenInfo);
 
         // Return a success response
         return { ResetPasswordResponse: 'Password reset successful' };
