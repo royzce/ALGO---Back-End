@@ -1,4 +1,5 @@
 import { Post } from 'src/posts/entities/post.entity';
+import { UserProfile } from 'src/users/entities/userProfile.entity';
 import {
   Entity,
   Column,
@@ -24,4 +25,8 @@ export class Share {
   @ManyToOne(() => Post, (post) => post.shares)
   @JoinColumn({ name: 'postId' })
   post: Post;
+
+  @ManyToOne(() => UserProfile, (user) => user.share)
+  @JoinColumn({ name: 'userId' })
+  user: UserProfile;
 }

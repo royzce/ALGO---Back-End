@@ -57,7 +57,7 @@ export class PostsService {
     try {
       post = await this.postRepository.save(post);
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new HttpException('failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     if (createPostDto.media) {
@@ -100,11 +100,13 @@ export class PostsService {
       relations: [
         'tags',
         'shares',
+        'shares.user',
         'media',
         'user',
         'comment',
         'comment.user',
         'reactions',
+        'reactions.user',
       ],
     });
 
@@ -197,11 +199,13 @@ export class PostsService {
       relations: [
         'tags',
         'shares',
+        'shares.user',
         'media',
         'user',
         'comment',
         'comment.user',
         'reactions',
+        'reactions.user',
       ],
     });
 

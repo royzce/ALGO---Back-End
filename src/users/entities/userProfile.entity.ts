@@ -2,6 +2,8 @@ import { Exclude } from 'class-transformer';
 import { Friend } from 'src/friends/entities/friend.entity';
 import { Comment } from 'src/posts/entities/comment.entity';
 import { Post } from 'src/posts/entities/post.entity';
+import { Reaction } from 'src/reactions/entities/reaction.entity';
+import { Share } from 'src/shares/entities/share.entity';
 import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
 import { OneToMany } from 'typeorm/decorator/relations/OneToMany';
 import { Interest } from './interest.entity';
@@ -47,4 +49,10 @@ export class UserProfile {
 
   @OneToMany(() => Comment, (comment) => comment.user)
   comment: Comment[];
+
+  @OneToMany(() => Reaction, (reaction) => reaction.user)
+  reactions: Reaction[];
+
+  @OneToMany(() => Share, (share) => share.user)
+  share: Share[];
 }
