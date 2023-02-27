@@ -11,6 +11,7 @@ import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
 import { EditCommentDto } from 'src/posts/dtos/editComment.dto';
 import { EditPostDto } from 'src/posts/dtos/editPost.dto';
+import { EditPrivacyDto } from 'src/posts/dtos/editPrivacy.dto';
 import { Comment } from 'src/posts/entities/comment.entity';
 import { Media } from 'src/posts/entities/media.entity';
 import { Post } from 'src/posts/entities/post.entity';
@@ -96,7 +97,15 @@ export class PostsService {
 
   async getAllPost(): Promise<Post[]> {
     const allPosts = await this.postRepository.find({
-      relations: ['tags', 'shares', 'media', 'user', 'comment', 'reactions'],
+      relations: [
+        'tags',
+        'shares',
+        'media',
+        'user',
+        'comment',
+        'comment.user',
+        'reactions',
+      ],
     });
 
     return allPosts;
@@ -106,8 +115,11 @@ export class PostsService {
     id,
     addCommentDto: AddCommentDto,
     userId: number,
-  ): Promise<Comment[]> {
-    const post = await this.postRepository.findOne({ where: { postId: id } });
+  ): Promise<Comment> {
+    const post = await this.postRepository.findOne({
+      where: { postId: id },
+      relations: ['user'],
+    });
     if (!post) {
       throw new NotFoundException('Post not found');
     }
@@ -122,7 +134,12 @@ export class PostsService {
     comment.userId = userId;
     comment = await this.commentRepository.save(comment);
 
-    return this.getComments(id);
+    const user = await this.userProfileRepository.findOne({
+      where: { userId: userId },
+    });
+    comment.user = user;
+
+    return comment;
   }
 
   async deletePost(id: number) {
@@ -177,8 +194,17 @@ export class PostsService {
   async getPost(id: number): Promise<Post> {
     const post = await this.postRepository.findOne({
       where: { postId: id },
-      relations: ['tags', 'shares', 'media', 'user', 'comment', 'reactions'],
+      relations: [
+        'tags',
+        'shares',
+        'media',
+        'user',
+        'comment',
+        'comment.user',
+        'reactions',
+      ],
     });
+
     return post;
   }
 
@@ -236,9 +262,10 @@ export class PostsService {
     postId: number,
     commentId: number,
     editCommentDto: EditCommentDto,
-  ): Promise<Comment[]> {
+  ): Promise<Comment> {
     let user = await this.userProfileRepository.findOne({
       where: { userId: userId },
+      relations: ['user'],
     });
 
     if (!user) {
@@ -262,6 +289,44 @@ export class PostsService {
       throw new HttpException('Edit Failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    return this.getComments(postId);
+    return comment;
+  }
+
+  async updatePrivacy(
+    _userId: number,
+    _postId: number,
+    editPrivacyDto: EditPrivacyDto,
+  ) {
+    const user = await this.userProfileRepository.findOne({
+      where: { userId: _userId },
+    });
+
+    if (!user) {
+      throw new HttpException(
+        'Unable to update privacy',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    let post = await this.postRepository.findOne({
+      where: { postId: _postId },
+    });
+
+    if (!post) {
+      throw new HttpException('Post not found', HttpStatus.BAD_REQUEST);
+    }
+
+    post.privacy = editPrivacyDto.privacy || post.privacy;
+
+    try {
+      post = await this.postRepository.save(post);
+    } catch (error) {
+      throw new HttpException(
+        'Unable to update privacy',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return this.getPost(_postId);
   }
 }

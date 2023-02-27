@@ -16,6 +16,7 @@ import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
 import { EditCommentDto } from 'src/posts/dtos/editComment.dto';
 import { EditPostDto } from 'src/posts/dtos/editPost.dto';
+import { EditPrivacyDto } from 'src/posts/dtos/editPrivacy.dto';
 import { PostsService } from 'src/posts/service/posts/posts.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
@@ -67,6 +68,19 @@ export class PostsController {
     @Param('commentId') commentId: number,
   ) {
     return this.postService.deleteComment(id, commentId);
+  }
+
+  @Put('/:id/editPrivacy')
+  editPrivacy(
+    @Param('id') postId: number,
+    @Body() editPrivacyDto: EditPrivacyDto,
+    @Request() req,
+  ) {
+    return this.postService.updatePrivacy(
+      req.user.userId,
+      postId,
+      editPrivacyDto,
+    );
   }
 
   @Put('/:id/edit')

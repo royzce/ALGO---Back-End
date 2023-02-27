@@ -1,7 +1,15 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Post } from 'src/posts/entities/post.entity';
+import { PostsService } from 'src/posts/service/posts/posts.service';
 import { AddReactionDto } from 'src/reactions/dtos/addReaction.dto';
 import { RemoveReactionDto } from 'src/reactions/dtos/removeReaction.dto';
+import { UpdateReactionDto } from 'src/reactions/dtos/updateReaction.dto';
 import { Reaction } from 'src/reactions/entities/reaction.entity';
 import { Repository } from 'typeorm/repository/Repository';
 
@@ -12,6 +20,7 @@ export class ReactionsService {
     private reactionRepository: Repository<Reaction>,
     @Inject('POST_REPOSITORY')
     private postRepository: Repository<Post>,
+    private postService: PostsService,
   ) {}
 
   async addReaction(addReactionDto: AddReactionDto, userId: number) {
@@ -29,7 +38,7 @@ export class ReactionsService {
     reaction.value = addReactionDto.value;
     reaction.date = addReactionDto.date;
     reaction = await this.reactionRepository.save(reaction);
-    return reaction;
+    return this.postService.getPost(addReactionDto.postId);
   }
 
   async removeReaction(removeReaction: RemoveReactionDto) {
@@ -50,6 +59,37 @@ export class ReactionsService {
     }
 
     await this.reactionRepository.remove(reaction);
-    return 'reaction removed';
+    return this.postService.getPost(removeReaction.postId);
+  }
+
+  async updateReaction(updateReactionDto: UpdateReactionDto) {
+    const post = await this.postRepository.findOne({
+      where: { postId: updateReactionDto.postId },
+    });
+
+    if (!post) {
+      throw new NotFoundException('Post not Found');
+    }
+
+    let reaction = await this.reactionRepository.findOne({
+      where: { postId: updateReactionDto.postId },
+    });
+
+    if (!reaction) {
+      throw new NotFoundException('No current user reaction');
+    }
+
+    reaction.value = updateReactionDto.value || reaction.value;
+
+    try {
+      reaction = await this.reactionRepository.save(reaction);
+    } catch (error) {
+      throw new HttpException(
+        'Update reaction failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return this.postService.getPost(updateReactionDto.postId);
   }
 }
