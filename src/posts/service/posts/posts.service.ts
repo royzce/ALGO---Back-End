@@ -122,6 +122,7 @@ export class PostsService {
     const allPosts = await this.postRepository.find({
       relations: [
         'tags',
+        'tags.tagUser',
         'shares',
         'shares.user',
         'media',
@@ -239,6 +240,7 @@ export class PostsService {
       where: { postId: id },
       relations: [
         'tags',
+        'tags.tagUser',
         'shares',
         'shares.user',
         'media',

@@ -65,30 +65,32 @@ export class ProfilesService {
           { userId: user.userId, privacy: 'friends' },
         ],
         relations: [
+          'tags',
+          'tags.tagUser',
+          'shares',
+          'shares.user',
           'media',
           'user',
           'comment',
           'comment.user',
           'reactions',
           'reactions.user',
-          'shares',
-          'shares.user',
-          'tags',
         ],
       });
     } else {
       return await this.postRepository.find({
         where: { userId: user.userId, privacy: 'public' },
         relations: [
+          'tags',
+          'tags.tagUser',
+          'shares',
+          'shares.user',
           'media',
           'user',
           'comment',
           'comment.user',
           'reactions',
           'reactions.user',
-          'shares',
-          'shares.user',
-          'tags',
         ],
       });
     }
