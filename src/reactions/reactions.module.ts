@@ -1,5 +1,6 @@
 import { Module, Provider } from '@nestjs/common';
 import { DatabaseModule } from 'src/database/database.module';
+import { friendProviders } from 'src/friends/providers/friend.provider';
 import { notificationProviders } from 'src/notifications/providers/notifications.providers';
 import { Post } from 'src/posts/entities/post.entity';
 import { commentProviders } from 'src/posts/providers/comment.providers';
@@ -18,6 +19,7 @@ import { ReactionsService } from './service/reactions/reactions.service';
   imports: [DatabaseModule],
   controllers: [ReactionsController],
   providers: [
+    ...friendProviders,
     ...notificationProviders,
     ...userProfileProviders,
     ...commentProviders,
@@ -27,6 +29,7 @@ import { ReactionsService } from './service/reactions/reactions.service';
     ...tagProviders,
     ...postMediaProviders,
     ...postProviders,
+
     {
       provide: 'POSTS_REPOSITORY',
       useFactory: (connection: Connection) => connection.getRepository(Post),

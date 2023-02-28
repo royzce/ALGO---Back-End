@@ -1,5 +1,6 @@
 import { Module, Provider } from '@nestjs/common';
 import { DatabaseModule } from 'src/database/database.module';
+import { friendProviders } from 'src/friends/providers/friend.provider';
 import { notificationProviders } from 'src/notifications/providers/notifications.providers';
 import { reactionProviders } from 'src/reactions/providers/reaction.providers';
 import { shareProviders } from 'src/shares/providers/share.provider';
@@ -23,6 +24,7 @@ import { PostsService } from './service/posts/posts.service';
     ...postMediaProviders,
     ...commentProviders,
     ...postProviders,
+    ...friendProviders,
     {
       provide: 'POSTS_REPOSITORY',
       useFactory: (connection: Connection) => connection.getRepository(Post),
@@ -30,6 +32,7 @@ import { PostsService } from './service/posts/posts.service';
     },
     ...userProfileProviders,
     ...reactionProviders,
+
     PostsService,
   ] as Provider<any>[],
   exports: [PostsService],
