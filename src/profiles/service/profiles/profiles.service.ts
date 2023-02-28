@@ -6,9 +6,11 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { profile } from 'console';
+import { Friend } from 'src/friends/entities/friend.entity';
 import { Media } from 'src/posts/entities/media.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { EditUserProfileDto } from 'src/profiles/dtos/editProfile.dto';
+import { Share } from 'src/shares/entities/share.entity';
 import { Interest } from 'src/users/entities/interest.entity';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
 import { UsersService } from 'src/users/services/users/users.service';
@@ -28,6 +30,10 @@ export class ProfilesService {
     private postRepository: Repository<Post>,
     @Inject('POSTMEDIA_REPOSITORY')
     private postMediaRepository: Repository<Media>,
+    @Inject('FRIEND_REPOSITORY')
+    private friendRepository: Repository<Friend>,
+    @Inject('SHARE_REPOSITORY')
+    private shareRepository: Repository<Share>,
   ) {}
 
   async findProfile(_username): Promise<UserProfile> {
@@ -39,19 +45,53 @@ export class ProfilesService {
     return profile;
   }
 
-  async getProfilePost(_username): Promise<Post[]> {
+  async getProfilePost(_username, currentUserId): Promise<Post[]> {
     const user = await this.userProfileRepository.findOne({
       where: { username: _username },
     });
 
-    const userId = user.userId;
-
-    let profile = await this.postRepository.find({
-      where: { userId: userId },
-      relations: ['tags', 'media', 'user', 'comment', 'reactions'],
+    const friend = await this.friendRepository.findOne({
+      where: [
+        { userId: currentUserId, friendId: user.userId },
+        { userId: user.userId, friendId: currentUserId },
+      ],
     });
 
-    return profile;
+    // const userId = user.userId;
+    if (friend) {
+      return await this.postRepository.find({
+        where: [
+          { userId: user.userId, privacy: 'public' },
+          { userId: user.userId, privacy: 'friends' },
+        ],
+        relations: [
+          'media',
+          'user',
+          'comment',
+          'comment.user',
+          'reactions',
+          'reactions.user',
+          'shares',
+          'shares.user',
+          'tags',
+        ],
+      });
+    } else {
+      return await this.postRepository.find({
+        where: { userId: user.userId, privacy: 'public' },
+        relations: [
+          'media',
+          'user',
+          'comment',
+          'comment.user',
+          'reactions',
+          'reactions.user',
+          'shares',
+          'shares.user',
+          'tags',
+        ],
+      });
+    }
   }
 
   async getUsersByName(query: string): Promise<UserProfile[]> {

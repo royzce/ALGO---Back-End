@@ -374,30 +374,4 @@ export class PostsService {
 
     return this.getPost(_postId);
   }
-
-  async getUserPosts(username: string, currentUserId: number) {
-    const user = await this.userProfileRepository.findOne({
-      where: { username },
-    });
-
-    const friend = await this.friendRepository.findOne({
-      where: [
-        { userId: currentUserId, friendId: user.userId },
-        { userId: user.userId, friendId: currentUserId },
-      ],
-    });
-
-    if (friend) {
-      return await this.postRepository.find({
-        where: [
-          { userId: user.userId, privacy: 'public' },
-          { userId: user.userId, privacy: 'friends' },
-        ],
-      });
-    } else {
-      return await this.postRepository.find({
-        where: { userId: user.userId, privacy: 'public' },
-      });
-    }
-  }
 }

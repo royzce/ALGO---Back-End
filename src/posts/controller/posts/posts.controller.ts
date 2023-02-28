@@ -32,12 +32,6 @@ export class PostsController {
     return this.postService.getAllPost();
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/:username')
-  getUserPosts(@Param('username') username: string, @Request() req) {
-    return this.postService.getUserPosts(username, req.user.userId);
-  }
-
   @Post()
   addPost(@Body() createPostDto: CreatePostDto, @Request() req) {
     return this.postService.createNewPost(createPostDto, req.user.userId);

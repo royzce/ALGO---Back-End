@@ -37,8 +37,8 @@ export class ProfilesController {
   }
 
   @Get(':username/post')
-  getUserPost(@Param('username') username: string) {
-    return this.profileService.getProfilePost(username);
+  getUserPost(@Param('username') username: string, @Request() req) {
+    return this.profileService.getProfilePost(username, req.user.userId);
   }
 
   @Put('/edit')
