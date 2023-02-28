@@ -70,6 +70,7 @@ export class AuthService {
         token,
         user.firstName,
       );
+      await this.usersService.removePrevToken(user.email);
       await this.usersService.addResetTokenTodb(tokenInfo);
 
       return true;

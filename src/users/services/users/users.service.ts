@@ -136,6 +136,10 @@ export class UsersService {
     });
   }
 
+  async removePrevToken(email: string) {
+    return await this.passwordResetTokenRepository.delete({ email });
+  }
+
   async removeResetPwdToken(token: string) {
     const resetToken = await this.passwordResetTokenRepository.findOne({
       where: { tokenValue: token },
