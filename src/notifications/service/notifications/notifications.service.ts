@@ -1,4 +1,6 @@
 import {
+  HttpException,
+  HttpStatus,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -29,5 +31,43 @@ export class NotificationsService {
     });
 
     return notifsCount;
+  }
+
+  async updateNotification({ notifId }) {
+    let notif = await this.notificationRepository.findOne({
+      where: { notifId: notifId },
+    });
+
+    if (!notif) {
+      throw new HttpException('Notification not found', HttpStatus.BAD_REQUEST);
+    }
+
+    notif.isRead = true || notif.isRead;
+
+    try {
+      notif = await this.notificationRepository.save(notif);
+    } catch {
+      throw new InternalServerErrorException();
+    }
+
+    return notif;
+  }
+
+  async deleteNotification({ notifId }) {
+    let notif = await this.notificationRepository.findOne({
+      where: { notifId: notifId },
+    });
+
+    if (!notif) {
+      throw new HttpException('Notification not found', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      notif = await this.notificationRepository.remove(notif);
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+
+    return notif;
   }
 }
