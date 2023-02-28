@@ -118,4 +118,19 @@ export class AuthService {
       throw new BadRequestException('Expired or invalid link');
     }
   }
+
+  async changePassword(
+    old_password: string,
+    new_password: string,
+    userId: number,
+  ) {
+    const user = await this.usersService.findUserById(userId);
+    if (user && (await bcrypt.compare(old_password, user.password))) {
+      const saltOrRounds = 10;
+      user.password = await bcrypt.hash(new_password, saltOrRounds);
+      return await this.usersService.updateUser(user);
+    } else {
+      throw new BadRequestException('Old password did not match.');
+    }
+  }
 }

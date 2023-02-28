@@ -59,7 +59,7 @@ export class UsersService {
 
   async findUserById(id: number): Promise<UserProfile> {
     let user = await this.userProfileRepository.findOneBy({ userId: id });
-    user.password = undefined;
+    // user.password = undefined;
 
     return user;
   }

@@ -5,14 +5,18 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Request,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
 import { UsersService } from 'src/users/services/users/users.service';
 import { AuthService } from './auth.service';
+import { ChangePasswordDto } from './dto/change.password.dto';
 import { ForgotPasswordDto } from './dto/forgot.password.dto';
 import { LoginDto } from './dto/login.dto';
 import { ResetPasswordDto } from './dto/reset.password.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
@@ -50,6 +54,20 @@ export class AuthController {
     return this.authService.resetPassword(
       resetPasswordDto.token,
       resetPasswordDto.password,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  async changePassword(
+    @Body() changepasswordDto: ChangePasswordDto,
+    @Request() req,
+  ) {
+    console.log(changepasswordDto, req.user.userId);
+    return this.authService.changePassword(
+      changepasswordDto.old_password,
+      changepasswordDto.new_password,
+      req.user.userId,
     );
   }
 }
