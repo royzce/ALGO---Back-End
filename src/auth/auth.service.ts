@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -25,7 +24,7 @@ export class AuthService {
     }
     return null;
   }
-  async login(loginDto: LoginDto, rememberMe: boolean = false) {
+  async login(loginDto: LoginDto, rememberMe: boolean) {
     const user = await this.usersService.findOne(loginDto.username);
     if (user && (await bcrypt.compare(loginDto.password, user.password))) {
       const { password, ...result } = user;
@@ -34,7 +33,6 @@ export class AuthService {
         sub: result.userId,
       };
       const expiresIn = rememberMe ? '7d' : '6h';
-      console.log('expires in?', expiresIn);
       return {
         accessToken: this.jwtService.sign(payload, { expiresIn }),
       };
