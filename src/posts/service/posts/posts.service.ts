@@ -228,6 +228,14 @@ export class PostsService {
       where: { postId: id, commentId: commentId },
       relations: ['user'],
     });
+
+    let repliedComment = await this.commentRepository.find({
+      where: { replyTo: comment.commentId },
+      relations: ['user'],
+    });
+
+    repliedComment = await this.commentRepository.remove(repliedComment);
+
     if (!comment) {
       throw new HttpException('Comment not found', HttpStatus.NOT_FOUND);
     }
