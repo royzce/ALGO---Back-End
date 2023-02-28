@@ -23,7 +23,7 @@ export class CreatePostDto {
 
   @ApiProperty({ type: Array })
   @IsOptional()
-  tags: string[];
+  tags: number[];
 
   @ApiProperty({ type: Date })
   date: Date;

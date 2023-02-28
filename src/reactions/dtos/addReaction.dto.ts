@@ -9,7 +9,7 @@ export class AddReactionDto {
   @ApiProperty({ required: true })
   value: string;
 
-  @ApiProperty({ required: true, type: 'string' })
+  @ApiProperty({ required: true, type: Date })
   @IsString()
   date: Date;
 }

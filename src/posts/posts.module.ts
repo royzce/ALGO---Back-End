@@ -1,5 +1,6 @@
 import { Module, Provider } from '@nestjs/common';
 import { DatabaseModule } from 'src/database/database.module';
+import { notificationProviders } from 'src/notifications/providers/notifications.providers';
 import { reactionProviders } from 'src/reactions/providers/reaction.providers';
 import { shareProviders } from 'src/shares/providers/share.provider';
 import { userProfileProviders } from 'src/users/providers/userProfile.providers';
@@ -16,6 +17,7 @@ import { PostsService } from './service/posts/posts.service';
   imports: [DatabaseModule],
   controllers: [PostsController],
   providers: [
+    ...notificationProviders,
     ...shareProviders,
     ...tagProviders,
     ...postMediaProviders,

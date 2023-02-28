@@ -17,6 +17,9 @@ export class Friend {
   @Column()
   status: string;
 
+  @Column()
+  date: Date;
+
   @ManyToOne(() => UserProfile, (user) => user.friends)
   @JoinColumn({ name: 'userId' })
   user: UserProfile;

@@ -13,18 +13,21 @@ export class NotificationsService {
     private notificationRepository: Repository<Notification>,
   ) {}
 
-  //notsureyet --testing to check if data is saving
-  async commented() {
-    let notification = new Notification();
+  async getNotification(userId: number) {
+    let notifs = await this.notificationRepository.find({
+      where: { userId: userId },
+      order: { date: 'DESC' },
+      relations: ['from'],
+    });
 
-    notification.type = 'comment';
-    notification.isRead = false;
-    notification.value = "user's comment";
-    notification.date = new Date();
-    notification.userId = 1;
+    return notifs;
+  }
 
-    notification = await this.notificationRepository.save(notification);
+  async getNotificationCnt(userId) {
+    let notifsCount = await this.notificationRepository.count({
+      where: { userId: userId, isRead: false },
+    });
 
-    return 'notif saved';
+    return notifsCount;
   }
 }

@@ -6,6 +6,7 @@ import {
   NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { Notification } from 'src/notifications/entities/notifications.entity';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
 import { EditCommentDto } from 'src/posts/dtos/editComment.dto';
@@ -23,6 +24,8 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class PostsService {
   constructor(
+    @Inject('NOTIFICATION_REPOSITORY')
+    private notificationRepository: Repository<Notification>,
     @Inject('TAG_REPOSITORY')
     private tagRepository: Repository<Tag>,
     @Inject('POSTMEDIA_REPOSITORY')
@@ -83,10 +86,28 @@ export class PostsService {
         tag.postId = post.postId;
         tag.taggedUsers = t;
 
+        let notification = new Notification();
+
+        notification.type = 'tag';
+        notification.isRead = false;
+        notification.date = createPostDto.date;
+        notification.notifFrom = userId;
+        notification.userId = t;
+        notification.typeId = post.postId;
+
         try {
           tag = await this.tagRepository.save(tag);
         } catch (error) {
           throw new HttpException('Cannot Tag', HttpStatus.FORBIDDEN);
+        }
+
+        try {
+          notification = await this.notificationRepository.save(notification);
+        } catch (error) {
+          throw new HttpException(
+            'Failed saving notification',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
         }
       });
     }
@@ -118,7 +139,7 @@ export class PostsService {
     userId: number,
   ): Promise<Comment> {
     const post = await this.postRepository.findOne({
-      where: { postId: id },
+      where: { postId: id, privacy: 'friends' },
       relations: ['user'],
     });
     if (!post) {
@@ -134,6 +155,24 @@ export class PostsService {
     comment.postId = id;
     comment.userId = userId;
     comment = await this.commentRepository.save(comment);
+
+    let notification = new Notification();
+
+    notification.notifId = post.userId;
+    notification.type = 'comments';
+    notification.date = addCommentDto.date;
+    notification.isRead = false;
+    notification.typeId = comment.commentId;
+    notification.notifFrom = userId;
+
+    try {
+      notification = await this.notificationRepository.save(notification);
+    } catch (error) {
+      throw new HttpException(
+        'Failed saving notification',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
 
     const user = await this.userProfileRepository.findOne({
       where: { userId: userId },

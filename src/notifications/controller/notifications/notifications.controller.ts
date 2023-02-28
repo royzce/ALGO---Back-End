@@ -1,22 +1,19 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { NotificationsService } from 'src/notifications/service/notifications/notifications.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('notifications')
 export class NotificationsController {
   constructor(private notificationService: NotificationsService) {}
 
-  @Post('/comment')
-  comment() {
-    return this.notificationService.commented();
+  @Get()
+  getNotifs(@Request() req) {
+    return this.notificationService.getNotification(req.user.userId);
   }
 
-  @Post('/friendRequest')
-  friendRequest() {
-    return 'friendRequest';
-  }
-
-  @Post('/reaction')
-  Reaction() {
-    return 'friendRequest';
+  @Get('count')
+  getNotifCount(@Request() req) {
+    return this.notificationService.getNotificationCnt(req.user.userId);
   }
 }
