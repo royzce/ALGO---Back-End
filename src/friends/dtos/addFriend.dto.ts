@@ -3,6 +3,9 @@ import { ApiProperty } from '@nestjs/swagger';
 export class AddFriendDto {
   @ApiProperty({ required: true })
   friendId: number;
+
+  @ApiProperty({ type: Date })
+  date: Date;
 }
 
 export class AcceptFrienDto {

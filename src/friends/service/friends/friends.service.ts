@@ -5,21 +5,25 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { AddFriendDto } from 'src/friends/dtos/addFriend.dto';
 import { Friend } from 'src/friends/entities/friend.entity';
+import { Notification } from 'src/notifications/entities/notifications.entity';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
 import { Repository } from 'typeorm/repository/Repository';
 
 @Injectable()
 export class FriendsService {
   constructor(
+    @Inject('NOTIFICATION_REPOSITORY')
+    private notificationRepository: Repository<Notification>,
     @Inject('FRIEND_REPOSITORY') private friendRepository: Repository<Friend>,
     @Inject('USERPROFILE_REPOSITORY')
     private userProfileRepository: Repository<UserProfile>,
   ) {}
 
-  async addFriend({ friendId }, userId: number) {
+  async addFriend(addFriendDto: AddFriendDto, userId: number) {
     let user = await this.userProfileRepository.findOne({
-      where: { userId: friendId },
+      where: { userId: addFriendDto.friendId },
     });
 
     if (!user) {
@@ -29,8 +33,19 @@ export class FriendsService {
     let friendRequest = new Friend();
 
     friendRequest.userId = userId;
-    friendRequest.friendId = friendId;
+    friendRequest.friendId = addFriendDto.friendId;
+    friendRequest.date = addFriendDto.date;
     friendRequest.status = 'pending';
+
+    console.log(friendRequest.id);
+
+    let notification = new Notification();
+    notification.type = 'requestFriend';
+    notification.userId = addFriendDto.friendId;
+    notification.isRead = false;
+    notification.typeId = 0;
+    notification.notifFrom = userId;
+    notification.date = addFriendDto.date;
 
     try {
       friendRequest = await this.friendRepository.save(friendRequest);
@@ -41,6 +56,15 @@ export class FriendsService {
       );
     }
 
+    // try {
+    notification = await this.notificationRepository.save(notification);
+    // } catch (error) {
+    //   throw new HttpException(
+    //     'Failed saving notification',
+    //     HttpStatus.INTERNAL_SERVER_ERROR,
+    //   );
+    // }
+
     return 'friend request sent';
   }
 
@@ -49,11 +73,30 @@ export class FriendsService {
       where: { friendId: _userId, userId: friendId },
     });
     friendRequest.status = 'friends';
+    friendRequest.date = new Date();
+
+    // let notification = new Notification();
+    // notification.type = 'acceptFriend';
+    // notification.userId = friendRequest.friendId;
+    // notification.date = friendRequest.date;
+    // notification.isRead = false;
+    // notification.notifFrom = _userId;
+    // notification.typeId = friendRequest.id;
+
     try {
       friendRequest = await this.friendRepository.save(friendRequest);
     } catch (error) {
       throw new HttpException('Failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    // try {
+    //   notification = await this.notificationRepository.save(notification);
+    // } catch (error) {
+    //   throw new HttpException(
+    //     'Failed saving notification',
+    //     HttpStatus.INTERNAL_SERVER_ERROR,
+    //   );
+    // }
 
     return 'accepted';
   }

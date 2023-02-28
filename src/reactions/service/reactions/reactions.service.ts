@@ -5,6 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Notification } from 'src/notifications/entities/notifications.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { PostsService } from 'src/posts/service/posts/posts.service';
 import { AddReactionDto } from 'src/reactions/dtos/addReaction.dto';
@@ -16,6 +17,8 @@ import { Repository } from 'typeorm/repository/Repository';
 @Injectable()
 export class ReactionsService {
   constructor(
+    @Inject('NOTIFICATION_REPOSITORY')
+    private notificationRepository: Repository<Notification>,
     @Inject('REACTION_REPOSITORY')
     private reactionRepository: Repository<Reaction>,
     @Inject('POST_REPOSITORY')
@@ -41,6 +44,24 @@ export class ReactionsService {
     reaction.value = addReactionDto.value;
     reaction.date = addReactionDto.date;
     reaction = await this.reactionRepository.save(reaction);
+
+    let notif = new Notification();
+    notif.type = 'reaction';
+    notif.userId = post.userId;
+    notif.date = reaction.date;
+    notif.notifFrom = userId;
+    notif.isRead = false;
+    notif.typeId = reaction.reactionId;
+
+    try {
+      notif = await this.notificationRepository.save(notif);
+    } catch (error) {
+      throw new HttpException(
+        'Failed saving notification',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     return reaction;
   }
 

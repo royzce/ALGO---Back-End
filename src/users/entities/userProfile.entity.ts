@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { Friend } from 'src/friends/entities/friend.entity';
+import { Notification } from 'src/notifications/entities/notifications.entity';
 import { Comment } from 'src/posts/entities/comment.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { Reaction } from 'src/reactions/entities/reaction.entity';
@@ -55,4 +56,7 @@ export class UserProfile {
 
   @OneToMany(() => Share, (share) => share.user)
   share: Share[];
+
+  @OneToMany(() => Notification, (notification) => notification.from)
+  notification: Notification[];
 }

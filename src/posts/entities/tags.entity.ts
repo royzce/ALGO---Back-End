@@ -19,7 +19,7 @@ export class Tag {
   userId: number;
 
   @Column()
-  taggedUsers: string;
+  taggedUsers: number;
 
   @ManyToOne(() => Post, (post) => post.tags)
   @JoinColumn({ name: 'postId' })
