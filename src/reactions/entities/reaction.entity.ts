@@ -28,4 +28,8 @@ export class Reaction {
   @ManyToOne(() => Post, (post) => post.reactions)
   @JoinColumn({ name: 'postId' })
   post: Post;
+
+  @ManyToOne(() => UserProfile, (user) => user.reactions)
+  @JoinColumn({ name: 'userId' })
+  user: UserProfile;
 }

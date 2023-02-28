@@ -6,7 +6,6 @@ import {
   NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
 import { EditCommentDto } from 'src/posts/dtos/editComment.dto';
@@ -57,7 +56,7 @@ export class PostsService {
     try {
       post = await this.postRepository.save(post);
     } catch (error) {
-      throw new InternalServerErrorException();
+      throw new HttpException('failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     if (createPostDto.media) {
@@ -100,11 +99,13 @@ export class PostsService {
       relations: [
         'tags',
         'shares',
+        'shares.user',
         'media',
         'user',
         'comment',
         'comment.user',
         'reactions',
+        'reactions.user',
       ],
     });
 
@@ -197,11 +198,13 @@ export class PostsService {
       relations: [
         'tags',
         'shares',
+        'shares.user',
         'media',
         'user',
         'comment',
         'comment.user',
         'reactions',
+        'reactions.user',
       ],
     });
 

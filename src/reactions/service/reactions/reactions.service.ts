@@ -23,7 +23,10 @@ export class ReactionsService {
     private postService: PostsService,
   ) {}
 
-  async addReaction(addReactionDto: AddReactionDto, userId: number) {
+  async addReaction(
+    addReactionDto: AddReactionDto,
+    userId: number,
+  ): Promise<Reaction> {
     const post = await this.postRepository.findOne({
       where: { postId: addReactionDto.postId },
     });
@@ -38,10 +41,10 @@ export class ReactionsService {
     reaction.value = addReactionDto.value;
     reaction.date = addReactionDto.date;
     reaction = await this.reactionRepository.save(reaction);
-    return this.postService.getPost(addReactionDto.postId);
+    return reaction;
   }
 
-  async removeReaction(removeReaction: RemoveReactionDto) {
+  async removeReaction(removeReaction: RemoveReactionDto): Promise<Reaction> {
     const post = await this.postRepository.findOne({
       where: { postId: removeReaction.postId },
     });
@@ -59,10 +62,12 @@ export class ReactionsService {
     }
 
     await this.reactionRepository.remove(reaction);
-    return this.postService.getPost(removeReaction.postId);
+    return reaction;
   }
 
-  async updateReaction(updateReactionDto: UpdateReactionDto) {
+  async updateReaction(
+    updateReactionDto: UpdateReactionDto,
+  ): Promise<Reaction> {
     const post = await this.postRepository.findOne({
       where: { postId: updateReactionDto.postId },
     });
@@ -90,6 +95,6 @@ export class ReactionsService {
       );
     }
 
-    return this.postService.getPost(updateReactionDto.postId);
+    return reaction;
   }
 }
