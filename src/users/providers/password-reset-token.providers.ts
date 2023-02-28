@@ -1,11 +1,11 @@
 import { Connection } from 'typeorm';
-import { BlackListedToken } from '../entities/blacklistedToken.entity';
+import { PasswordResetToken } from '../entities/password-reset-token.entity';
 
-export const blacklistedTokensProviders = [
+export const passwordResetTokenProviders = [
   {
     provide: 'BLACKLISTEDTOKEN_REPOSITORY',
     useFactory: (connection: Connection) =>
-      connection.getRepository(BlackListedToken),
+      connection.getRepository(PasswordResetToken),
     inject: ['DATABASE_CONNECTION'],
   },
 ];

@@ -7,7 +7,7 @@ import { Like } from 'typeorm/find-options/operator/Like';
 import { Interest } from 'src/users/entities/interest.entity';
 import { use } from 'passport';
 import { Not } from 'typeorm/find-options/operator/Not';
-import { BlackListedToken } from 'src/users/entities/blacklistedToken.entity';
+import { PasswordResetToken } from 'src/users/entities/password-reset-token.entity';
 
 @Injectable()
 export class UsersService {
@@ -15,7 +15,7 @@ export class UsersService {
     @Inject('USERPROFILE_REPOSITORY')
     private userProfileRepository: Repository<UserProfile>,
     @Inject('BLACKLISTEDTOKEN_REPOSITORY')
-    private blackListedTokenRepository: Repository<BlackListedToken>,
+    private passwordResetTokenRepository: Repository<PasswordResetToken>,
   ) {}
 
   async createNewUser(userDto: createUserProfileDto) {
@@ -122,17 +122,24 @@ export class UsersService {
     await this.userProfileRepository.save(user);
   }
 
-  async getBlacklistedTokens() {
-    return await this.blackListedTokenRepository.find();
+  async findPwdResetToken() {
+    return await this.passwordResetTokenRepository.find();
   }
 
-  async addTokenToBlacklist(tokenInfo) {
-    return await this.blackListedTokenRepository.save(tokenInfo);
+  async addResetTokenTodb(tokenInfo) {
+    return await this.passwordResetTokenRepository.save(tokenInfo);
   }
 
-  async checkIfTokenIsInBlacklist(token: string) {
-    return await this.blackListedTokenRepository.findOneBy({
+  async checkIfResetPwdTokenIsInDB(token: string) {
+    return await this.passwordResetTokenRepository.findOneBy({
       tokenValue: token,
     });
+  }
+
+  async removeResetPwdToken(token: string) {
+    const resetToken = await this.passwordResetTokenRepository.findOne({
+      where: { tokenValue: token },
+    });
+    await this.passwordResetTokenRepository.remove(resetToken);
   }
 }
