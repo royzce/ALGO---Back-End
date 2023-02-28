@@ -64,18 +64,20 @@ export class AuthService {
       exp: this.getDatePlusOneHour(),
     };
 
-    await this.mailerService
-      .sendResetPasswordEmail(user.email, token, user.firstName)
-      .then(() => {
-        this.usersService.addResetTokenTodb(tokenInfo);
-        //successfully sends email
-        return true;
-      })
-      .catch((err) => {
-        throw new InternalServerErrorException(
-          'Failed to send reset password email',
-        );
-      });
+    try {
+      await this.mailerService.sendResetPasswordEmail(
+        user.email,
+        token,
+        user.firstName,
+      );
+      await this.usersService.addResetTokenTodb(tokenInfo);
+
+      return true;
+    } catch (err) {
+      throw new InternalServerErrorException(
+        'Failed to send reset password email',
+      );
+    }
   }
 
   async resetPassword(token: string, newPassword: string) {
@@ -110,8 +112,8 @@ export class AuthService {
         user.password = await bcrypt.hash(newPassword, saltOrRounds);
         await this.usersService.updateUser(user);
 
-        // Invalidate the token in the database
-        // ...
+        // Invalidate the token in the database, by removing in in the db
+        await this.usersService.removeResetPwdToken(token);
 
         // Return a success response
         return { ResetPasswordResponse: 'Password reset successful' };

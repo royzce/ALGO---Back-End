@@ -135,4 +135,11 @@ export class UsersService {
       tokenValue: token,
     });
   }
+
+  async removeResetPwdToken(token: string) {
+    const resetToken = await this.passwordResetTokenRepository.findOne({
+      where: { tokenValue: token },
+    });
+    await this.passwordResetTokenRepository.remove(resetToken);
+  }
 }
