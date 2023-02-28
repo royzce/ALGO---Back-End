@@ -36,27 +36,8 @@ export class ShareService {
     share.date = sharePostDto.date;
     share.userId = userId;
 
-    let sharedPost = new Post();
-    sharedPost.userId = userId;
-    sharedPost.isRepost = true;
-    sharedPost.value = post.value;
-    sharedPost.repostId = post.postId;
-    sharedPost.privacy = post.privacy;
-    sharedPost.date = post.date;
-    sharedPost.isEdited = post.isEdited;
-
-    let notification = new Notification();
-    notification.notifFrom = userId;
-    notification.isRead = false;
-    notification.type = 'share';
-    notification.typeId = post.postId;
-    notification.userId = post.userId;
-    notification.date = sharePostDto.date;
-
     try {
-      sharedPost = await this.postRepository.save(sharedPost);
       share = await this.shareRepository.save(share);
-      notification = await this.notificationRepository.save(notification);
     } catch (error) {
       throw new HttpException('Share Failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }

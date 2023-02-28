@@ -1,3 +1,4 @@
+import { UserProfile } from 'src/users/entities/userProfile.entity';
 import {
   Entity,
   Column,
