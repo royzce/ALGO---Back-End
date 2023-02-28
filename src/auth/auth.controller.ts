@@ -2,6 +2,8 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  HttpCode,
+  HttpStatus,
   Post,
   UseInterceptors,
 } from '@nestjs/common';
@@ -21,6 +23,7 @@ export class AuthController {
   ) {}
 
   @Post()
+  @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto) {
     const user = new UserProfile();
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -33,7 +36,8 @@ export class AuthController {
       user.username = loginDto.username;
     }
     user.password = loginDto.password;
-    return this.authService.login(user);
+
+    return this.authService.login(user, loginDto.remember);
   }
 
   @Post('forgot-password')

@@ -25,7 +25,7 @@ export class AuthService {
     }
     return null;
   }
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, rememberMe: boolean = false) {
     const user = await this.usersService.findOne(loginDto.username);
     if (user && (await bcrypt.compare(loginDto.password, user.password))) {
       const { password, ...result } = user;
@@ -33,8 +33,10 @@ export class AuthService {
       const payload = {
         sub: result.userId,
       };
+      const expiresIn = rememberMe ? '7d' : '6h';
+      console.log('expires in?', expiresIn);
       return {
-        accessToken: this.jwtService.sign(payload),
+        accessToken: this.jwtService.sign(payload, { expiresIn }),
       };
     }
 

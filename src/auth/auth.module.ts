@@ -12,7 +12,7 @@ import { UsersModule } from 'src/users/users.module';
 import { interestProviders } from 'src/users/providers/interest.providers';
 import { MailerService } from 'src/mailer/mailer.service';
 import { MailerModule } from 'src/mailer/mailer.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { blacklistedTokensProviders } from 'src/users/providers/blacklistedToken.providers';
 
 @Module({
@@ -22,9 +22,17 @@ import { blacklistedTokensProviders } from 'src/users/providers/blacklistedToken
     ConfigModule.forRoot(),
     MailerModule,
     PassportModule,
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1h' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: jwtConstants.secret,
+        signOptions: {
+          expiresIn: configService.get<boolean>('app.rememberMe')
+            ? '7d'
+            : '6hr',
+        },
+      }),
+      inject: [ConfigService],
     }),
   ],
   providers: [

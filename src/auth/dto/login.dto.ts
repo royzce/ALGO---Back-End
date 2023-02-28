@@ -6,4 +6,7 @@ export class LoginDto {
 
   @ApiProperty({ required: true })
   password: string;
+
+  @ApiProperty({ required: true })
+  remember?: boolean;
 }
