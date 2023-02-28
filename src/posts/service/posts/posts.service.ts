@@ -50,6 +50,28 @@ export class PostsService {
     userId: number,
   ): Promise<Post> {
     let post = new Post();
+    let postData = await this.postRepository.findOne({
+      where: { postId: createPostDto.repostId },
+    });
+
+    if (createPostDto.isRepost === true) {
+      let sharePost = new Share();
+      sharePost.postId = postData.postId;
+      sharePost.date = createPostDto.date;
+      sharePost.userId = userId;
+
+      let notification = new Notification();
+      notification.notifFrom = userId;
+      notification.isRead = false;
+      notification.type = 'share';
+      notification.typeId = postData.postId;
+      notification.userId = postData.userId;
+      notification.date = createPostDto.date;
+
+      sharePost = await this.shareRepository.save(sharePost);
+
+      notification = await this.notificationRepository.save(notification);
+    }
 
     post.userId = userId;
     post.isRepost = createPostDto.isRepost;

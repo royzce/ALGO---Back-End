@@ -3,6 +3,7 @@ import { Friend } from 'src/friends/entities/friend.entity';
 import { Notification } from 'src/notifications/entities/notifications.entity';
 import { Comment } from 'src/posts/entities/comment.entity';
 import { Post } from 'src/posts/entities/post.entity';
+import { Tag } from 'src/posts/entities/tags.entity';
 import { Reaction } from 'src/reactions/entities/reaction.entity';
 import { Share } from 'src/shares/entities/share.entity';
 import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
@@ -59,4 +60,7 @@ export class UserProfile {
 
   @OneToMany(() => Notification, (notification) => notification.from)
   notification: Notification[];
+
+  // @OneToMany(() => Tag, (tags) => tags.user)
+  // Tag: Tag[];
 }
