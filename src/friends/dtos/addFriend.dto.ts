@@ -12,3 +12,8 @@ export class AcceptFrienDto {
   @ApiProperty({ required: true })
   friendId: number;
 }
+
+export class DeleteFrienDto {
+  @ApiProperty({ required: true })
+  friendId: number;
+}

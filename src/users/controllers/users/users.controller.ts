@@ -28,6 +28,12 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get()
+  getAllUsers() {
+    return this.userService.getAllUsers();
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('/me')
   getProfile(@Request() req) {
     return this.userService.getUserInfo(req.user.userId);
