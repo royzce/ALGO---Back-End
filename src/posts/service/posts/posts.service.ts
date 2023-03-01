@@ -62,17 +62,34 @@ export class PostsService {
       sharePost.date = createPostDto.date;
       sharePost.userId = userId;
 
-      let notification = new Notification();
-      notification.notifFrom = userId;
-      notification.isRead = false;
-      notification.type = 'share';
-      notification.typeId = postData.postId;
-      notification.userId = postData.userId;
-      notification.date = createPostDto.date;
-
       sharePost = await this.shareRepository.save(sharePost);
 
-      notification = await this.notificationRepository.save(notification);
+      let notifExist = await this.notificationRepository.findOne({
+        where: { type: 'share', typeId: postData.postId, isRead: false },
+      });
+
+      if (notifExist) {
+        notifExist.type = 'share';
+        notifExist.userId = postData.userId;
+        notifExist.date = createPostDto.date;
+        notifExist.notifFrom = userId;
+        notifExist.isRead = false;
+        notifExist.typeId = postData.postId;
+        notifExist.count = notifExist.count + 1;
+
+        notifExist = await this.notificationRepository.save(notifExist);
+      } else {
+        let notification = new Notification();
+        notification.notifFrom = userId;
+        notification.isRead = false;
+        notification.type = 'share';
+        notification.typeId = postData.postId;
+        notification.userId = postData.userId;
+        notification.date = createPostDto.date;
+        notification.count = 1;
+
+        notification = await this.notificationRepository.save(notification);
+      }
     }
 
     post.userId = userId;
@@ -113,28 +130,45 @@ export class PostsService {
         tag.postId = post.postId;
         tag.taggedUsers = t;
 
-        let notification = new Notification();
-
-        notification.type = 'tag';
-        notification.isRead = false;
-        notification.date = createPostDto.date;
-        notification.notifFrom = userId;
-        notification.userId = t;
-        notification.typeId = post.postId;
-
         try {
           tag = await this.tagRepository.save(tag);
         } catch (error) {
           throw new HttpException('Cannot Tag', HttpStatus.FORBIDDEN);
         }
 
-        try {
-          notification = await this.notificationRepository.save(notification);
-        } catch (error) {
-          throw new HttpException(
-            'Failed saving notification',
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
+        let notifExist = await this.notificationRepository.findOne({
+          where: { type: 'tag', typeId: post.postId, isRead: false },
+        });
+
+        if (notifExist) {
+          notifExist.type = 'tag';
+          notifExist.userId = t;
+          notifExist.date = createPostDto.date;
+          notifExist.notifFrom = userId;
+          notifExist.isRead = false;
+          notifExist.typeId = post.postId;
+          notifExist.count = notifExist.count + 1;
+
+          notifExist = await this.notificationRepository.save(notifExist);
+        } else {
+          let notification = new Notification();
+
+          notification.type = 'tag';
+          notification.isRead = false;
+          notification.date = createPostDto.date;
+          notification.notifFrom = userId;
+          notification.userId = t;
+          notification.typeId = post.postId;
+          notification.count = 1;
+
+          try {
+            notification = await this.notificationRepository.save(notification);
+          } catch (error) {
+            throw new HttpException(
+              'Failed saving notification',
+              HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+          }
         }
       });
     }
@@ -167,7 +201,7 @@ export class PostsService {
     userId: number,
   ): Promise<Comment> {
     const post = await this.postRepository.findOne({
-      where: { postId: id, privacy: 'friends' },
+      where: { postId: id },
       relations: ['user'],
     });
     if (!post) {
@@ -184,14 +218,37 @@ export class PostsService {
     comment.userId = userId;
     comment = await this.commentRepository.save(comment);
 
+    const user = await this.userProfileRepository.findOne({
+      where: { userId: userId },
+    });
+    comment.user = user;
+
+    let notifExist = await this.notificationRepository.findOne({
+      where: { type: 'comments', typeId: post.postId, isRead: false },
+    });
+
+    if (notifExist) {
+      notifExist.type = 'comments';
+      notifExist.userId = post.userId;
+      notifExist.date = addCommentDto.date;
+      notifExist.notifFrom = userId;
+      notifExist.isRead = false;
+      notifExist.typeId = post.postId;
+      notifExist.count = notifExist.count + 1;
+
+      notifExist = await this.notificationRepository.save(notifExist);
+    }
+
     let notification = new Notification();
 
     notification.notifId = post.userId;
+    notification.userId = post.userId;
     notification.type = 'comments';
     notification.date = addCommentDto.date;
     notification.isRead = false;
-    notification.typeId = comment.commentId;
+    notification.typeId = post.postId;
     notification.notifFrom = userId;
+    notification.count = 1;
 
     try {
       notification = await this.notificationRepository.save(notification);
@@ -201,11 +258,6 @@ export class PostsService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-
-    const user = await this.userProfileRepository.findOne({
-      where: { userId: userId },
-    });
-    comment.user = user;
 
     return comment;
   }

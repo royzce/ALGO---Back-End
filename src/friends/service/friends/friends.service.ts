@@ -37,15 +37,39 @@ export class FriendsService {
     friendRequest.date = addFriendDto.date;
     friendRequest.status = 'pending';
 
-    console.log(friendRequest.id);
+    let notifExist = await this.notificationRepository.findOne({
+      where: { type: 'requestFriend', typeId: 0, isRead: false },
+    });
 
-    let notification = new Notification();
-    notification.type = 'requestFriend';
-    notification.userId = addFriendDto.friendId;
-    notification.isRead = false;
-    notification.typeId = 0;
-    notification.notifFrom = userId;
-    notification.date = addFriendDto.date;
+    if (notifExist) {
+      notifExist.type = 'requestFriend';
+      notifExist.userId = addFriendDto.friendId;
+      notifExist.date = addFriendDto.date;
+      notifExist.notifFrom = userId;
+      notifExist.isRead = false;
+      notifExist.typeId = 0;
+      notifExist.count = notifExist.count + 1;
+
+      notifExist = await this.notificationRepository.save(notifExist);
+    } else {
+      let notification = new Notification();
+      notification.type = 'requestFriend';
+      notification.userId = addFriendDto.friendId;
+      notification.isRead = false;
+      notification.typeId = 0;
+      notification.notifFrom = userId;
+      notification.date = addFriendDto.date;
+      notification.count = 1;
+
+      try {
+        notification = await this.notificationRepository.save(notification);
+      } catch (error) {
+        throw new HttpException(
+          'Failed saving notification',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
 
     try {
       friendRequest = await this.friendRepository.save(friendRequest);
@@ -55,15 +79,6 @@ export class FriendsService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-
-    // try {
-    notification = await this.notificationRepository.save(notification);
-    // } catch (error) {
-    //   throw new HttpException(
-    //     'Failed saving notification',
-    //     HttpStatus.INTERNAL_SERVER_ERROR,
-    //   );
-    // }
 
     return 'friend request sent';
   }
