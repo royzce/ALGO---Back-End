@@ -28,7 +28,7 @@ export class MailerService {
         `<p>Hi <strong>${name}</strong>,</p>` +
         `<p>We received a request to reset the password for your <strong>Algo account</strong>. If you did not make this request, please disregard this email.</p>` +
         `<p>To reset your password, please click on the following link:</p>` +
-        ` <p><a href="http://localhost:3000/reset-password/${token}">localhost:3000/change-password/...</a></p>` +
+        ` <p><button><a href="http://localhost:3000/reset-password/${token}">Reset Password</a></button></p>` +
         ` <p>Please note that this link will expire in an hour, so please reset your password as soon as possible.</p>` +
         `    <p>Thank you for using Algo!</p>` +
         `<p>Best regards,<br><strong>Algo</strong></p>`,
