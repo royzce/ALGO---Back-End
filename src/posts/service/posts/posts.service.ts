@@ -182,7 +182,7 @@ export class PostsService {
     const allPosts = await this.postRepository.find({
       relations: [
         'tags',
-        'tags.tagUser',
+        'tags.user',
         'shares',
         'shares.user',
         'media',
@@ -194,13 +194,14 @@ export class PostsService {
       ],
     });
 
-    const friends = await this.friendService.getFriendList(currentUserId);
+    let friends = await this.friendService.getFriendList(currentUserId);
+
     let homePosts = [];
     for (const friend of friends) {
       const friendPosts = allPosts.filter(
         (post) => post.userId === friend.userId && post.privacy !== 'private',
       );
-      homePosts.concat(friendPosts);
+      homePosts = homePosts.concat(friendPosts);
     }
     return homePosts;
   }
@@ -334,7 +335,7 @@ export class PostsService {
       where: { postId: id },
       relations: [
         'tags',
-        'tags.tagUser',
+        'tags.user',
         'shares',
         'shares.user',
         'media',

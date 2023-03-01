@@ -1,6 +1,7 @@
 import { Module, Provider } from '@nestjs/common';
 import { DatabaseModule } from 'src/database/database.module';
 import { friendProviders } from 'src/friends/providers/friend.provider';
+import { FriendsService } from 'src/friends/service/friends/friends.service';
 import { notificationProviders } from 'src/notifications/providers/notifications.providers';
 import { reactionProviders } from 'src/reactions/providers/reaction.providers';
 import { shareProviders } from 'src/shares/providers/share.provider';
@@ -34,6 +35,7 @@ import { PostsService } from './service/posts/posts.service';
     ...reactionProviders,
 
     PostsService,
+    FriendsService,
   ] as Provider<any>[],
   exports: [PostsService],
 })
