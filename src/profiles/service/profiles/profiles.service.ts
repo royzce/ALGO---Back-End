@@ -98,11 +98,12 @@ export class ProfilesService {
 
   async getUsersByName(query: string): Promise<UserProfile[]> {
     return await this.userProfileRepository.find({
-      select: { userId: true, firstName: true, lastName: true, avatar: true },
+      select: { username: true, firstName: true, lastName: true, avatar: true },
       where: [
         { firstName: Like(`%${query}%`) },
         { lastName: Like(`%${query}%`) },
       ],
+      take: 5,
     });
   }
 

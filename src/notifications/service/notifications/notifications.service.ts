@@ -6,7 +6,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Notification } from 'src/notifications/entities/notifications.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 
 @Injectable()
 export class NotificationsService {
@@ -17,7 +17,7 @@ export class NotificationsService {
 
   async getNotification(userId: number) {
     let notifs = await this.notificationRepository.find({
-      where: { userId: userId },
+      where: { userId: userId, notifFrom: Not(userId) },
       order: { date: 'DESC' },
       relations: ['from'],
     });
