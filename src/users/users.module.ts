@@ -5,6 +5,7 @@ import { interestProviders } from './providers/interest.providers';
 import { passwordResetTokenProviders } from './providers/password-reset-token.providers';
 import { userProfileProviders } from './providers/userProfile.providers';
 import { UsersService } from './services/users/users.service';
+import { friendProviders } from 'src/friends/providers/friend.provider';
 
 @Module({
   imports: [DatabaseModule],
@@ -13,8 +14,9 @@ import { UsersService } from './services/users/users.service';
     ...interestProviders,
     ...userProfileProviders,
     ...passwordResetTokenProviders,
+    ...friendProviders,
     UsersService,
   ],
   exports: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule { }

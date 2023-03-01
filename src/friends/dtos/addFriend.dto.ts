@@ -13,6 +13,11 @@ export class AcceptFrienDto {
   friendId: number;
 }
 
+export class RejectFriendDto {
+  @ApiProperty({ required: true })
+  friendId: number;
+}
+
 export class DeleteFrienDto {
   @ApiProperty({ required: true })
   friendId: number;

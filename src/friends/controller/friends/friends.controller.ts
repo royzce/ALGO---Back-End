@@ -5,6 +5,7 @@ import {
   Post,
   Request,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { Get } from '@nestjs/common/decorators';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -12,13 +13,14 @@ import {
   AcceptFrienDto,
   AddFriendDto,
   DeleteFrienDto,
+  RejectFriendDto,
 } from 'src/friends/dtos/addFriend.dto';
 import { FriendsService } from 'src/friends/service/friends/friends.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('/friends')
 export class FriendsController {
-  constructor(private friendsService: FriendsService) {}
+  constructor(private friendsService: FriendsService) { }
 
   @Get()
   getAllFriends(@Request() req) {
@@ -32,6 +34,11 @@ export class FriendsController {
   @Post('add')
   addFriend(@Body() addFriendDto: AddFriendDto, @Request() req) {
     return this.friendsService.addFriend(addFriendDto, req.user.userId);
+  }
+
+  @Delete('reject')
+  rejectFriend(@Body() rejectFriendDto: RejectFriendDto, @Request() req) {
+    return this.friendsService.rejectFriend(rejectFriendDto.friendId, req.user.userId);
   }
 
   @Post('/delete')

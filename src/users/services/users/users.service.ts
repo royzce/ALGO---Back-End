@@ -8,6 +8,7 @@ import { Interest } from 'src/users/entities/interest.entity';
 import { use } from 'passport';
 import { Not } from 'typeorm/find-options/operator/Not';
 import { PasswordResetToken } from 'src/users/entities/password-reset-token.entity';
+import { Friend } from 'src/friends/entities/friend.entity';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +17,9 @@ export class UsersService {
     private userProfileRepository: Repository<UserProfile>,
     @Inject('BLACKLISTEDTOKEN_REPOSITORY')
     private passwordResetTokenRepository: Repository<PasswordResetToken>,
-  ) {}
+    @Inject('FRIEND_REPOSITORY')
+    private friendRepository: Repository<Friend>
+  ) { }
 
   async createNewUser(userDto: createUserProfileDto) {
     let user = new UserProfile();
@@ -148,6 +151,7 @@ export class UsersService {
 
   async getAllUsers() {
     const users = await this.userProfileRepository.find({
+      // where: {},
       relations: ['interest'],
     });
     return users;
