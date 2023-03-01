@@ -52,8 +52,8 @@ export class ProfilesService {
 
     const friend = await this.friendRepository.findOne({
       where: [
-        { userId: currentUserId, friendId: user.userId },
-        { userId: user.userId, friendId: currentUserId },
+        { userId: currentUserId, friendId: user.userId, status: 'friends' },
+        { userId: user.userId, friendId: currentUserId, status: 'friends' },
       ],
     });
 
