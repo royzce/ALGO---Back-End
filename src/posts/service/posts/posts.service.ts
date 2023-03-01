@@ -493,19 +493,30 @@ export class PostsService {
         'reactions.user',
       ],
     });
-
+    console.log('allpost', allPosts);
     let friends = await this.friendService.getFriendList(currentUserId);
-
+    console.log('friends', friends);
     let searchRes = [];
-    for (const friend of friends) {
-      const friendPosts = allPosts.filter(
-        (post) => post.userId === friend.userId && post.privacy === 'friends',
-      );
+    if (friends.length > 0) {
+      for (const friend of friends) {
+        const friendPosts = allPosts.filter(
+          (post) => post.userId === friend.userId && post.privacy === 'friends',
+        );
+        searchRes = searchRes.concat(friendPosts);
+      }
 
-      searchRes = searchRes.concat(friendPosts);
+      const publicPosts = allPosts.filter((post) => post.privacy === 'public');
+      searchRes = searchRes.concat(publicPosts);
+    } else {
+      const publicPosts = allPosts.filter((post) => post.privacy !== 'private');
+      searchRes = searchRes.concat(publicPosts);
     }
-    const publicPosts = allPosts.filter((post) => post.privacy === 'public');
-    searchRes = searchRes.concat(publicPosts);
+    const privatePosts = allPosts.filter(
+      (post) => post.privacy === 'private' && post.userId === currentUserId,
+    );
+    searchRes = searchRes.concat(privatePosts);
+
+    console.log('search resutl', searchRes);
     return searchRes;
   }
 }
