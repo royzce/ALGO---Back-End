@@ -29,7 +29,7 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Get()
   getAllPosts(@Request() req) {
-    return this.postService.getAllPost();
+    return this.postService.getAllPost(req.user.userId);
   }
 
   @Post()
