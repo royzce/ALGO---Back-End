@@ -21,7 +21,7 @@ import { Tag } from 'src/posts/entities/tags.entity';
 import { Reaction } from 'src/reactions/entities/reaction.entity';
 import { Share } from 'src/shares/entities/share.entity';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 @Injectable()
 export class PostsService {
@@ -235,7 +235,7 @@ export class PostsService {
     comment.user = user;
 
     let notifExist = await this.notificationRepository.findOne({
-      where: { type: 'comments', typeId: post.postId, isRead: false },
+      where: { type: 'comments', typeId: post.postId },
     });
 
     if (notifExist) {
@@ -470,5 +470,37 @@ export class PostsService {
     }
 
     return this.getPost(_postId);
+  }
+
+  async getPostsByQuery(q: string, currentUserId: number) {
+    const allPosts = await this.postRepository.find({
+      where: { value: Like(`%${q}%`) },
+      relations: [
+        'tags',
+        'tags.user',
+        'shares',
+        'shares.user',
+        'media',
+        'user',
+        'comment',
+        'comment.user',
+        'reactions',
+        'reactions.user',
+      ],
+    });
+
+    let friends = await this.friendService.getFriendList(currentUserId);
+
+    let searchRes = [];
+    for (const friend of friends) {
+      const friendPosts = allPosts.filter(
+        (post) => post.userId === friend.userId && post.privacy === 'friends',
+      );
+
+      searchRes = searchRes.concat(friendPosts);
+    }
+    const publicPosts = allPosts.filter((post) => post.privacy === 'public');
+    searchRes = searchRes.concat(publicPosts);
+    return searchRes;
   }
 }

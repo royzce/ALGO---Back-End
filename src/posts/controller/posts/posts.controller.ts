@@ -10,7 +10,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
 } from '@nestjs/common';
-import { Put, Request, UseGuards } from '@nestjs/common/decorators';
+import { Put, Query, Request, UseGuards } from '@nestjs/common/decorators';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
@@ -35,6 +35,11 @@ export class PostsController {
   @Post()
   addPost(@Body() createPostDto: CreatePostDto, @Request() req) {
     return this.postService.createNewPost(createPostDto, req.user.userId);
+  }
+
+  @Get('search')
+  getPostsByQuery(@Query('q') q: string, @Request() req) {
+    return this.postService.getPostsByQuery(q, req.user.userId);
   }
 
   @Get('/:id')

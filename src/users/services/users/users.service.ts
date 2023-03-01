@@ -15,11 +15,11 @@ export class UsersService {
   constructor(
     @Inject('USERPROFILE_REPOSITORY')
     private userProfileRepository: Repository<UserProfile>,
-    @Inject('BLACKLISTEDTOKEN_REPOSITORY')
+    @Inject('PASSWORDRESET_REPOSITORY')
     private passwordResetTokenRepository: Repository<PasswordResetToken>,
     @Inject('FRIEND_REPOSITORY')
-    private friendRepository: Repository<Friend>
-  ) { }
+    private friendRepository: Repository<Friend>,
+  ) {}
 
   async createNewUser(userDto: createUserProfileDto) {
     let user = new UserProfile();

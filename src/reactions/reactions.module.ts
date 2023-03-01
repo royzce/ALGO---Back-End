@@ -10,7 +10,9 @@ import { postMediaProviders } from 'src/posts/providers/postMedia.providers';
 import { tagProviders } from 'src/posts/providers/tag.provider';
 import { PostsService } from 'src/posts/service/posts/posts.service';
 import { shareProviders } from 'src/shares/providers/share.provider';
+import { passwordResetTokenProviders } from 'src/users/providers/password-reset-token.providers';
 import { userProfileProviders } from 'src/users/providers/userProfile.providers';
+import { UsersService } from 'src/users/services/users/users.service';
 import { Connection } from 'typeorm/connection/Connection';
 import { ReactionsController } from './controller/reactions/reactions.controller';
 import { reactionProviders } from './providers/reaction.providers';
@@ -30,7 +32,7 @@ import { ReactionsService } from './service/reactions/reactions.service';
     ...tagProviders,
     ...postMediaProviders,
     ...postProviders,
-
+    ...passwordResetTokenProviders,
     {
       provide: 'POSTS_REPOSITORY',
       useFactory: (connection: Connection) => connection.getRepository(Post),
@@ -39,6 +41,7 @@ import { ReactionsService } from './service/reactions/reactions.service';
     ReactionsService,
     PostsService,
     FriendsService,
+    UsersService,
   ],
   exports: [ReactionsService],
 })
