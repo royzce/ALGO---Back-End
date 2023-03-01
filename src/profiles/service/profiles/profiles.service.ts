@@ -170,7 +170,6 @@ export class ProfilesService {
       order: {
         mediaId: 'DESC',
       },
-      take: 6,
     });
     console.log(photos);
 
