@@ -59,7 +59,6 @@ export class UsersService {
 
   async findUserById(id: number): Promise<UserProfile> {
     let user = await this.userProfileRepository.findOneBy({ userId: id });
-    // user.password = undefined;
 
     return user;
   }
@@ -145,5 +144,12 @@ export class UsersService {
       where: { tokenValue: token },
     });
     await this.passwordResetTokenRepository.remove(resetToken);
+  }
+
+  async getAllUsers() {
+    const users = await this.userProfileRepository.find({
+      relations: ['interest'],
+    });
+    return users;
   }
 }

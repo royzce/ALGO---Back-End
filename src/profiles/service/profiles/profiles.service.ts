@@ -172,25 +172,31 @@ export class ProfilesService {
   }
 
   async validateUsername(username: string, userId: number) {
-    let user = await this.userProfileRepository.findOne({
-      where: { username: username, userId: Not(userId) },
-    });
-    console.log('from user', user);
-    if (user) {
-      return 'taken';
+    if (username !== null) {
+      let user = await this.userProfileRepository.findOne({
+        where: { username: username, userId: Not(userId) },
+      });
+      console.log('from user', user);
+      if (user) {
+        return 'taken';
+      }
     }
+
     return 'available';
   }
 
   async validateEmail(email: string, userId: number) {
-    let user = await this.userProfileRepository.findOne({
-      where: { email: email, userId: Not(userId) },
-    });
-    console.log('from email', user);
+    if (email !== null) {
+      let user = await this.userProfileRepository.findOne({
+        where: { email: email, userId: Not(userId) },
+      });
+      console.log('from email', user);
 
-    if (user) {
-      return 'taken';
+      if (user) {
+        return 'taken';
+      }
     }
+
     return 'available';
   }
 }
