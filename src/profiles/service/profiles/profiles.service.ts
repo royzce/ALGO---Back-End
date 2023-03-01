@@ -167,6 +167,10 @@ export class ProfilesService {
     console.log(_userId);
     let photos = await this.postMediaRepository.find({
       where: { userId: _userId },
+      order: {
+        mediaId: 'DESC',
+      },
+      take: 6,
     });
     console.log(photos);
 
