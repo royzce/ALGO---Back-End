@@ -8,7 +8,11 @@ import {
 } from '@nestjs/common';
 import { Get } from '@nestjs/common/decorators';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { AcceptFrienDto, AddFriendDto } from 'src/friends/dtos/addFriend.dto';
+import {
+  AcceptFrienDto,
+  AddFriendDto,
+  DeleteFrienDto,
+} from 'src/friends/dtos/addFriend.dto';
 import { FriendsService } from 'src/friends/service/friends/friends.service';
 
 @UseGuards(JwtAuthGuard)
@@ -24,6 +28,14 @@ export class FriendsController {
   @Post('add')
   addFriend(@Body() addFriendDto: AddFriendDto, @Request() req) {
     return this.friendsService.addFriend(addFriendDto, req.user.userId);
+  }
+
+  @Post('/delete')
+  deleteFriend(@Body() deleteFriendDto: DeleteFrienDto, @Request() req) {
+    return this.friendsService.deleteFriend(
+      deleteFriendDto.friendId,
+      req.user.userId,
+    );
   }
 
   @Post('/accept')

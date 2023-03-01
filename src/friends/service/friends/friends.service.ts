@@ -127,4 +127,17 @@ export class FriendsService {
     });
     return user;
   }
+
+  async deleteFriend(friendId: number, userId: number) {
+    let friend = await this.friendRepository.findOne({
+      where: [
+        { status: 'friends', userId: userId, friendId: friendId },
+        { status: 'friends', friendId: userId, userId: friendId },
+      ],
+    });
+
+    friend = await this.friendRepository.remove(friend);
+
+    return friend;
+  }
 }
