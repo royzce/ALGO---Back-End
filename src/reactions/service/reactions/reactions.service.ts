@@ -45,21 +45,38 @@ export class ReactionsService {
     reaction.date = addReactionDto.date;
     reaction = await this.reactionRepository.save(reaction);
 
-    let notif = new Notification();
-    notif.type = 'reaction';
-    notif.userId = post.userId;
-    notif.date = reaction.date;
-    notif.notifFrom = userId;
-    notif.isRead = false;
-    notif.typeId = reaction.reactionId;
+    let notifExist = await this.notificationRepository.findOne({
+      where: { type: 'reaction', typeId: addReactionDto.postId, isRead: false },
+    });
 
-    try {
-      notif = await this.notificationRepository.save(notif);
-    } catch (error) {
-      throw new HttpException(
-        'Failed saving notification',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    if (notifExist) {
+      notifExist.type = 'reaction';
+      notifExist.userId = post.userId;
+      notifExist.date = addReactionDto.date;
+      notifExist.notifFrom = userId;
+      notifExist.isRead = false;
+      notifExist.typeId = reaction.postId;
+      notifExist.count = notifExist.count + 1;
+
+      notifExist = await this.notificationRepository.save(notifExist);
+    } else {
+      let notif = new Notification();
+      notif.type = 'reaction';
+      notif.userId = post.userId;
+      notif.date = reaction.date;
+      notif.notifFrom = userId;
+      notif.isRead = false;
+      notif.typeId = reaction.postId;
+      notif.count = 1;
+
+      try {
+        notif = await this.notificationRepository.save(notif);
+      } catch (error) {
+        throw new HttpException(
+          'Failed saving notification',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
 
     return reaction;

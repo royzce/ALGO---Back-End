@@ -31,6 +31,9 @@ export class Notification {
   @Column()
   date: Date;
 
+  @Column()
+  count: number;
+
   @ManyToOne(() => UserProfile, (user) => user.notification)
   @JoinColumn({ name: 'notifFrom' })
   from: UserProfile;
