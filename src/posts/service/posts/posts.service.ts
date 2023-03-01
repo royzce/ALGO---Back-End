@@ -203,6 +203,11 @@ export class PostsService {
       );
       homePosts = homePosts.concat(friendPosts);
     }
+
+    const currentUserPosts = allPosts.filter(
+      (post) => post.userId === currentUserId,
+    );
+    homePosts = homePosts.concat(currentUserPosts);
     return homePosts;
   }
 
