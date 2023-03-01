@@ -7,6 +7,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Friend } from 'src/friends/entities/friend.entity';
+import { FriendsService } from 'src/friends/service/friends/friends.service';
 import { Notification } from 'src/notifications/entities/notifications.entity';
 import { AddCommentDto } from 'src/posts/dtos/addComment.dto';
 import { CreatePostDto } from 'src/posts/dtos/createPost.dto';
@@ -43,6 +44,7 @@ export class PostsService {
     private reactionRepository: Repository<Reaction>,
     @Inject('FRIEND_REPOSITORY')
     private friendRepository: Repository<Friend>,
+    private friendService: FriendsService,
   ) {}
 
   async createNewPost(
@@ -176,7 +178,7 @@ export class PostsService {
     return post;
   }
 
-  async getAllPost(): Promise<Post[]> {
+  async getAllPost(currentUserId: number): Promise<Post[]> {
     const allPosts = await this.postRepository.find({
       relations: [
         'tags',
@@ -192,7 +194,15 @@ export class PostsService {
       ],
     });
 
-    return allPosts;
+    const friends = await this.friendService.getFriendList(currentUserId);
+    let homePosts = [];
+    for (const friend of friends) {
+      const friendPosts = allPosts.filter(
+        (post) => post.userId === friend.userId && post.privacy !== 'private',
+      );
+      homePosts.concat(friendPosts);
+    }
+    return homePosts;
   }
 
   async addComment(
