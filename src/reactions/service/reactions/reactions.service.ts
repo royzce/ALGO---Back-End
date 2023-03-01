@@ -46,7 +46,7 @@ export class ReactionsService {
     reaction = await this.reactionRepository.save(reaction);
 
     let notifExist = await this.notificationRepository.findOne({
-      where: { type: 'reaction', typeId: addReactionDto.postId, isRead: false },
+      where: { type: 'reaction', typeId: addReactionDto.postId },
     });
 
     if (notifExist) {

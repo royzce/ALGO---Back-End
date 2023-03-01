@@ -206,4 +206,26 @@ export class ProfilesService {
 
     return 'available';
   }
+
+  async getNonFriend(currentUserId: number) {
+    const friends = await this.friendRepository.find({
+      where: [{ userId: currentUserId }, { friendId: currentUserId }],
+    });
+    console.log('friends including pending', friends);
+    const allUsers = await this.userProfileRepository.find({
+      where: { userId: Not(currentUserId) },
+    });
+    return allUsers.filter((user) => {
+      const res = friends.find(
+        (friend) =>
+          friend.friendId === user.userId || friend.userId === user.userId,
+      );
+      if (res) {
+        console.log('nag false', res);
+        return false;
+      }
+      console.log('nag true', res);
+      return true;
+    });
+  }
 }

@@ -47,7 +47,7 @@ export class NotificationsService {
     //     newNotifs.push(notif);
     //   }
     // }
-
+    console.log('notif', notifs);
     return notifs;
   }
 
@@ -55,7 +55,6 @@ export class NotificationsService {
     let notifsCount = await this.notificationRepository.count({
       where: { userId: userId, isRead: false },
     });
-
     return notifsCount;
   }
 

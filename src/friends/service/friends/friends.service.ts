@@ -19,7 +19,7 @@ export class FriendsService {
     @Inject('FRIEND_REPOSITORY') private friendRepository: Repository<Friend>,
     @Inject('USERPROFILE_REPOSITORY')
     private userProfileRepository: Repository<UserProfile>,
-  ) { }
+  ) {}
 
   async addFriend(addFriendDto: AddFriendDto, userId: number) {
     let user = await this.userProfileRepository.findOne({
@@ -38,7 +38,11 @@ export class FriendsService {
     friendRequest.status = 'pending';
 
     let notifExist = await this.notificationRepository.findOne({
-      where: { type: 'requestFriend', typeId: 0, isRead: false },
+      where: {
+        type: 'requestFriend',
+        typeId: 0,
+        userId: addFriendDto.friendId,
+      },
     });
 
     if (notifExist) {
@@ -117,17 +121,19 @@ export class FriendsService {
   }
 
   async getFriendRequest(userId: number) {
-    return await this.friendRepository.find({
+    const res = await this.friendRepository.find({
       where: { friendId: userId, status: 'pending' },
-      relations: ["user.friends"]
+      relations: ['user.friends'],
     });
+    // console.log('get friend req', res);
+    return res;
   }
 
   async rejectFriend(friendId: number, userId: number) {
     const user = await this.friendRepository.find({
       where: { friendId: userId, status: 'pending' },
     });
-    return await this.friendRepository.remove(user)
+    return await this.friendRepository.remove(user);
   }
 
   async getFriendList(userId: number): Promise<UserProfile[]> {

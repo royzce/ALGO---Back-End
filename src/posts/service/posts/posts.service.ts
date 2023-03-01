@@ -67,7 +67,7 @@ export class PostsService {
       sharePost = await this.shareRepository.save(sharePost);
 
       let notifExist = await this.notificationRepository.findOne({
-        where: { type: 'share', typeId: postData.postId, isRead: false },
+        where: { type: 'share', typeId: postData.postId },
       });
 
       if (notifExist) {
@@ -139,7 +139,7 @@ export class PostsService {
         }
 
         let notifExist = await this.notificationRepository.findOne({
-          where: { type: 'tag', typeId: post.postId, isRead: false },
+          where: { type: 'tag', typeId: post.postId },
         });
 
         if (notifExist) {
@@ -411,8 +411,8 @@ export class PostsService {
     editCommentDto: EditCommentDto,
   ): Promise<Comment> {
     let user = await this.userProfileRepository.findOne({
-      where: { userId: userId },
-      relations: ['user'],
+      where: { userId },
+      relations: ['comment.user'],
     });
 
     if (!user) {
