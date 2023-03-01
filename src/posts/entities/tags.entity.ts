@@ -25,4 +25,8 @@ export class Tag {
   @ManyToOne(() => Post, (post) => post.tags)
   @JoinColumn({ name: 'postId' })
   post: Post;
+
+  @ManyToOne(() => UserProfile, (post) => post.tag)
+  @JoinColumn({ name: 'taggedUsers' })
+  tagUser: UserProfile;
 }

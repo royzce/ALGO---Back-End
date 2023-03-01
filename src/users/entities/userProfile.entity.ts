@@ -61,6 +61,6 @@ export class UserProfile {
   @OneToMany(() => Notification, (notification) => notification.from)
   notification: Notification[];
 
-  // @OneToMany(() => Tag, (tags) => tags.user)
-  // Tag: Tag[];
+  @OneToMany(() => Tag, (tag) => tag.tagUser)
+  tag: Tag[];
 }

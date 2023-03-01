@@ -144,6 +144,7 @@ export class PostsService {
     const allPosts = await this.postRepository.find({
       relations: [
         'tags',
+        'tags.tagUser',
         'shares',
         'shares.user',
         'media',
@@ -249,6 +250,14 @@ export class PostsService {
       where: { postId: id, commentId: commentId },
       relations: ['user'],
     });
+
+    let repliedComment = await this.commentRepository.find({
+      where: { replyTo: comment.commentId },
+      relations: ['user'],
+    });
+
+    repliedComment = await this.commentRepository.remove(repliedComment);
+
     if (!comment) {
       throw new HttpException('Comment not found', HttpStatus.NOT_FOUND);
     }
@@ -261,6 +270,7 @@ export class PostsService {
       where: { postId: id },
       relations: [
         'tags',
+        'tags.tagUser',
         'shares',
         'shares.user',
         'media',
