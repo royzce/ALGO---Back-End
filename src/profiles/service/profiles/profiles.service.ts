@@ -66,7 +66,7 @@ export class ProfilesService {
         ],
         relations: [
           'tags',
-          'tags.tagUser',
+          'tags.user',
           'shares',
           'shares.user',
           'media',
@@ -82,7 +82,7 @@ export class ProfilesService {
         where: { userId: user.userId, privacy: 'public' },
         relations: [
           'tags',
-          'tags.tagUser',
+          'tags.user',
           'shares',
           'shares.user',
           'media',
