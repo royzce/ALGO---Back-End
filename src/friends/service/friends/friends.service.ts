@@ -101,6 +101,11 @@ export class FriendsService {
     return 'accepted';
   }
 
+  async getFriendRequest(userId: number) {
+    return await this.friendRepository.find({
+      where: { userId, status: 'pending' },
+    });
+  }
   async getFriendList(userId: number): Promise<UserProfile[]> {
     const friends = await this.friendRepository
       .createQueryBuilder('friend')

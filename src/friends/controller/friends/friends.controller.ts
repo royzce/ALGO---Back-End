@@ -25,6 +25,10 @@ export class FriendsController {
     return this.friendsService.getFriendList(req.user.userId);
   }
 
+  @Get('/request')
+  getFriendRequest(@Request() req) {
+    return this.friendsService.getFriendRequest(req.user.userId);
+  }
   @Post('add')
   addFriend(@Body() addFriendDto: AddFriendDto, @Request() req) {
     return this.friendsService.addFriend(addFriendDto, req.user.userId);
