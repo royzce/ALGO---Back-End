@@ -159,6 +159,7 @@ export class FriendsService {
   async getFriend(friendId: number): Promise<UserProfile> {
     let user = await this.userProfileRepository.findOne({
       where: { userId: friendId },
+      relations: ['media'],
     });
     return user;
   }

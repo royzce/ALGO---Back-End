@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { profile } from 'console';
 import { Friend } from 'src/friends/entities/friend.entity';
+import { FriendsService } from 'src/friends/service/friends/friends.service';
 import { Media } from 'src/posts/entities/media.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { EditUserProfileDto } from 'src/profiles/dtos/editProfile.dto';
@@ -34,6 +35,7 @@ export class ProfilesService {
     private friendRepository: Repository<Friend>,
     @Inject('SHARE_REPOSITORY')
     private shareRepository: Repository<Share>,
+    private friendService: FriendsService,
   ) {}
 
   async findProfile(_username): Promise<UserProfile> {
@@ -225,5 +227,20 @@ export class ProfilesService {
       console.log('nag true', res);
       return true;
     });
+  }
+
+  async getUserAndPhotos(username: string) {
+    let user = await this.userProfileRepository.findOne({
+      where: { username: username },
+    });
+
+    if (!user) {
+      throw new HttpException('Username mot found', HttpStatus.NOT_FOUND);
+    }
+
+    let users = await this.friendService.getFriend(user.userId);
+    console.log(users);
+
+    return users;
   }
 }

@@ -2,6 +2,7 @@ import { Exclude } from 'class-transformer';
 import { Friend } from 'src/friends/entities/friend.entity';
 import { Notification } from 'src/notifications/entities/notifications.entity';
 import { Comment } from 'src/posts/entities/comment.entity';
+import { Media } from 'src/posts/entities/media.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { Tag } from 'src/posts/entities/tags.entity';
 import { Reaction } from 'src/reactions/entities/reaction.entity';
@@ -63,4 +64,7 @@ export class UserProfile {
 
   @OneToMany(() => Tag, (tag) => tag.user)
   tag: Tag[];
+
+  @OneToMany(() => Media, (media) => media.user)
+  media: Media[];
 }
