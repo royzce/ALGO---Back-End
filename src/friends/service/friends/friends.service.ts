@@ -191,8 +191,10 @@ export class FriendsService {
   async deleteFriend(friendId: number, userId: number) {
     let friend = await this.friendRepository.findOne({
       where: [
-        { status: 'friends', userId: userId, friendId: friendId },
-        { status: 'friends', friendId: userId, userId: friendId },
+        // { status: 'friends', userId: userId, friendId: friendId },
+        // { status: 'friends', friendId: userId, userId: friendId },
+        { userId: userId, friendId: friendId },
+        { friendId: userId, userId: friendId },
       ],
     });
 
