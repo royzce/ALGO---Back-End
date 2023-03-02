@@ -19,7 +19,7 @@ export class FriendsService {
     @Inject('FRIEND_REPOSITORY') private friendRepository: Repository<Friend>,
     @Inject('USERPROFILE_REPOSITORY')
     private userProfileRepository: Repository<UserProfile>,
-  ) { }
+  ) {}
 
   async addFriend(addFriendDto: AddFriendDto, userId: number) {
     let user = await this.userProfileRepository.findOne({
@@ -38,7 +38,11 @@ export class FriendsService {
     friendRequest.status = 'pending';
 
     let notifExist = await this.notificationRepository.findOne({
-      where: { type: 'requestFriend', typeId: 0, isRead: false },
+      where: {
+        type: 'requestFriend',
+        typeId: 0,
+        userId: addFriendDto.friendId,
+      },
     });
 
     if (notifExist) {
@@ -48,7 +52,9 @@ export class FriendsService {
       notifExist.notifFrom = userId;
       notifExist.isRead = false;
       notifExist.typeId = 0;
-      notifExist.count = notifExist.count + 1;
+      notifExist.count = await this.friendRepository.count({
+        where: { userId: userId, status: 'pending' },
+      });
 
       notifExist = await this.notificationRepository.save(notifExist);
     } else {
@@ -90,18 +96,39 @@ export class FriendsService {
     friendRequest.status = 'friends';
     friendRequest.date = new Date();
 
-    // let notification = new Notification();
-    // notification.type = 'acceptFriend';
-    // notification.userId = friendRequest.friendId;
-    // notification.date = friendRequest.date;
-    // notification.isRead = false;
-    // notification.notifFrom = _userId;
-    // notification.typeId = friendRequest.id;
-
     try {
       friendRequest = await this.friendRepository.save(friendRequest);
     } catch (error) {
       throw new HttpException('Failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    let notifExist = await this.notificationRepository.findOne({
+      where: { type: 'acceptFriend', typeId: 0 },
+    });
+
+    if (notifExist) {
+      notifExist.type = 'acceptFriend';
+      notifExist.userId = friendRequest.friendId;
+      notifExist.date = friendRequest.date;
+      notifExist.notifFrom = _userId;
+      notifExist.isRead = false;
+      notifExist.typeId = 0;
+      notifExist.count = await this.friendRepository.count({
+        where: { userId: _userId, status: 'friends' },
+      });
+
+      notifExist = await this.notificationRepository.save(notifExist);
+    } else {
+      let notification = new Notification();
+      notification.type = 'acceptFriend';
+      notification.userId = friendRequest.friendId;
+      notification.date = friendRequest.date;
+      notification.isRead = false;
+      notification.notifFrom = _userId;
+      notification.typeId = 0;
+      notification.count = 1;
+
+      notification = await this.notificationRepository.save(notification);
     }
 
     // try {
@@ -119,7 +146,7 @@ export class FriendsService {
   async getFriendRequest(userId: number) {
     return await this.friendRepository.find({
       where: { friendId: userId, status: 'pending' },
-      relations: ["user.friends"]
+      relations: ['user.friends'],
     });
   }
 
@@ -127,7 +154,7 @@ export class FriendsService {
     const user = await this.friendRepository.find({
       where: { friendId: userId, status: 'pending' },
     });
-    return await this.friendRepository.remove(user)
+    return await this.friendRepository.remove(user);
   }
 
   async getFriendList(userId: number): Promise<UserProfile[]> {

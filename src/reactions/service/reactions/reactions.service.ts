@@ -12,6 +12,7 @@ import { AddReactionDto } from 'src/reactions/dtos/addReaction.dto';
 import { RemoveReactionDto } from 'src/reactions/dtos/removeReaction.dto';
 import { UpdateReactionDto } from 'src/reactions/dtos/updateReaction.dto';
 import { Reaction } from 'src/reactions/entities/reaction.entity';
+import { Not } from 'typeorm/find-options/operator/Not';
 import { Repository } from 'typeorm/repository/Repository';
 
 @Injectable()
@@ -46,7 +47,7 @@ export class ReactionsService {
     reaction = await this.reactionRepository.save(reaction);
 
     let notifExist = await this.notificationRepository.findOne({
-      where: { type: 'reaction', typeId: addReactionDto.postId, isRead: false },
+      where: { type: 'reaction', typeId: addReactionDto.postId },
     });
 
     if (notifExist) {
@@ -56,7 +57,11 @@ export class ReactionsService {
       notifExist.notifFrom = userId;
       notifExist.isRead = false;
       notifExist.typeId = reaction.postId;
-      notifExist.count = notifExist.count + 1;
+      notifExist.count = await this.reactionRepository.count({
+        where: { postId: addReactionDto.postId, userId: Not(post.userId) },
+      });
+
+      console.log(notifExist.count);
 
       notifExist = await this.notificationRepository.save(notifExist);
     } else {

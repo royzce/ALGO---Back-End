@@ -22,6 +22,7 @@ import { Reaction } from 'src/reactions/entities/reaction.entity';
 import { Share } from 'src/shares/entities/share.entity';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
 import { Like, Repository } from 'typeorm';
+import { Not } from 'typeorm/find-options/operator/Not';
 
 @Injectable()
 export class PostsService {
@@ -77,7 +78,9 @@ export class PostsService {
         notifExist.notifFrom = userId;
         notifExist.isRead = false;
         notifExist.typeId = postData.postId;
-        notifExist.count = notifExist.count + 1;
+        notifExist.count = await this.shareRepository.count({
+          where: { postId: postData.postId },
+        });
 
         notifExist = await this.notificationRepository.save(notifExist);
       } else {
@@ -139,39 +142,40 @@ export class PostsService {
         }
 
         let notifExist = await this.notificationRepository.findOne({
-          where: { type: 'tag', typeId: post.postId, isRead: false },
+          where: { type: 'tag', typeId: post.postId },
         });
 
-        if (notifExist) {
-          notifExist.type = 'tag';
-          notifExist.userId = t;
-          notifExist.date = createPostDto.date;
-          notifExist.notifFrom = userId;
-          notifExist.isRead = false;
-          notifExist.typeId = post.postId;
-          notifExist.count = notifExist.count + 1;
+        // if (notifExist) {
+        //   notifExist.type = 'tag';
+        //   notifExist.userId = t;
+        //   notifExist.date = createPostDto.date;
+        //   notifExist.notifFrom = userId;
+        //   notifExist.isRead = false;
+        //   notifExist.typeId = post.postId;
+        //   notifExist.count = await this.tagRepository.count({
+        //     where: { postId: post.postId, userId: Not(userId) },
+        //   });
+        //   await this.notificationRepository.save(notifExist);
+        // } else {
+        let notification = new Notification();
 
-          notifExist = await this.notificationRepository.save(notifExist);
-        } else {
-          let notification = new Notification();
+        notification.type = 'tag';
+        notification.isRead = false;
+        notification.date = createPostDto.date;
+        notification.notifFrom = userId;
+        notification.userId = t;
+        notification.typeId = post.postId;
+        notification.count = 1;
 
-          notification.type = 'tag';
-          notification.isRead = false;
-          notification.date = createPostDto.date;
-          notification.notifFrom = userId;
-          notification.userId = t;
-          notification.typeId = post.postId;
-          notification.count = 1;
-
-          try {
-            notification = await this.notificationRepository.save(notification);
-          } catch (error) {
-            throw new HttpException(
-              'Failed saving notification',
-              HttpStatus.INTERNAL_SERVER_ERROR,
-            );
-          }
+        try {
+          notification = await this.notificationRepository.save(notification);
+        } catch (error) {
+          throw new HttpException(
+            'Failed saving notification',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
         }
+        // }
       });
     }
 
@@ -240,7 +244,7 @@ export class PostsService {
     comment.user = user;
 
     let notifExist = await this.notificationRepository.findOne({
-      where: { type: 'comments', typeId: post.postId },
+      where: { type: 'comments', typeId: id },
     });
 
     if (notifExist) {
@@ -250,29 +254,39 @@ export class PostsService {
       notifExist.notifFrom = userId;
       notifExist.isRead = false;
       notifExist.typeId = post.postId;
-      notifExist.count = notifExist.count + 1;
+
+      const count = await this.commentRepository
+        .createQueryBuilder('comment')
+        .select('COUNT(DISTINCT comment.userId)', 'count')
+        .where('comment.postId = :postId', { postId: post.postId })
+        .andWhere('comment.userId != :userId', { userId: post.userId })
+        .getRawOne();
+
+      notifExist.count = count.count;
 
       notifExist = await this.notificationRepository.save(notifExist);
-    }
 
-    let notification = new Notification();
+      console.log('went here bebe');
+    } else {
+      let notification = new Notification();
 
-    notification.notifId = post.userId;
-    notification.userId = post.userId;
-    notification.type = 'comments';
-    notification.date = addCommentDto.date;
-    notification.isRead = false;
-    notification.typeId = post.postId;
-    notification.notifFrom = userId;
-    notification.count = 1;
+      notification.notifId = post.userId;
+      notification.userId = post.userId;
+      notification.type = 'comments';
+      notification.date = addCommentDto.date;
+      notification.isRead = false;
+      notification.typeId = post.postId;
+      notification.notifFrom = userId;
+      notification.count = 1;
 
-    try {
-      notification = await this.notificationRepository.save(notification);
-    } catch (error) {
-      throw new HttpException(
-        'Failed saving notification',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      try {
+        notification = await this.notificationRepository.save(notification);
+      } catch (error) {
+        throw new HttpException(
+          'Failed saving notification',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
 
     return comment;
