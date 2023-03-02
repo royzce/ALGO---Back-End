@@ -20,7 +20,7 @@ import { FriendsService } from 'src/friends/service/friends/friends.service';
 @UseGuards(JwtAuthGuard)
 @Controller('/friends')
 export class FriendsController {
-  constructor(private friendsService: FriendsService) { }
+  constructor(private friendsService: FriendsService) {}
 
   @Get()
   getAllFriends(@Request() req) {
@@ -38,7 +38,10 @@ export class FriendsController {
 
   @Delete('reject')
   rejectFriend(@Body() rejectFriendDto: RejectFriendDto, @Request() req) {
-    return this.friendsService.rejectFriend(rejectFriendDto.friendId, req.user.userId);
+    return this.friendsService.rejectFriend(
+      rejectFriendDto.friendId,
+      req.user.userId,
+    );
   }
 
   @Post('/delete')

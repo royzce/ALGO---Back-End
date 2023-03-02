@@ -175,7 +175,8 @@ export class FriendsService {
       user.push(await this.getFriend(friend.friendId));
     }
 
-    let friendList = user.filter((user) => user.userId !== userId);
+    const friendList = user.filter((user) => user.userId !== userId);
+    console.log('friendList', friendList);
     return friendList;
   }
 

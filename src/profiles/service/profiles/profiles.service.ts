@@ -139,7 +139,7 @@ export class ProfilesService {
     user.lastName = editProfileDto.lastName || user.lastName;
     user.avatar = editProfileDto.avatar || user.avatar;
     user.cover = editProfileDto.cover || user.cover;
-    user.bio = editProfileDto.bio || user.bio;
+    editProfileDto.bio !== undefined || null ? editProfileDto.bio : user.bio;
 
     if (editProfileDto.interest) {
       await this.interestRepository.delete({ userId });
@@ -239,8 +239,70 @@ export class ProfilesService {
     }
 
     let users = await this.friendService.getFriend(user.userId);
-    console.log(users);
+    console.log('getusers and photos', users);
 
     return users;
+  }
+
+  async getUserStatus(usernameOfRandom: string, currentUserId: number) {
+    // friends, sender, acceptor, stranger
+    const randomUser = await this.userProfileRepository.findOne({
+      where: { username: usernameOfRandom },
+    });
+    //check if the username is the current user
+    if (randomUser.userId === currentUserId) {
+      console.log('this is you');
+      return { userstatus: 'you' };
+    }
+
+    //check if username is your friend
+    const isFriends = await this.friendRepository.findOne({
+      where: [
+        {
+          userId: currentUserId,
+          friendId: randomUser.userId,
+          status: 'friends',
+        },
+        {
+          userId: randomUser.userId,
+          friendId: currentUserId,
+          status: 'friends',
+        },
+      ],
+    });
+    if (isFriends) {
+      console.log('is friends');
+      return { userStatus: 'friends' };
+    }
+
+    //check if this you send friend request to this user
+    const isSender = await this.friendRepository.findOne({
+      where: {
+        userId: randomUser.userId,
+        friendId: currentUserId,
+        status: 'pending',
+      },
+    });
+
+    if (isSender) {
+      return { userStatus: 'sender' };
+    }
+
+    //check if this user sends a friend request to you
+    const isAcceptor = await this.friendRepository.findOne({
+      where: {
+        userId: currentUserId,
+        friendId: randomUser.userId,
+        status: 'pending',
+      },
+    });
+
+    if (isAcceptor) {
+      return { userStatus: 'acceptor' };
+    }
+
+    //else this is stranger to you
+    console.log('nag else');
+    return { userStatus: 'stranger' };
   }
 }

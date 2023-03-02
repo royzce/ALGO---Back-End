@@ -58,4 +58,9 @@ export class ProfilesController {
   editProfile(@Body() editProfileDto: EditUserProfileDto, @Request() req) {
     return this.profileService.editProfile(req.user.userId, editProfileDto);
   }
+
+  @Get(':username/status')
+  getUserStatus(@Param('username') username: string, @Request() req) {
+    return this.profileService.getUserStatus(username, req.user.userId);
+  }
 }
