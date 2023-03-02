@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from 'src/database/database.module';
 import { friendProviders } from 'src/friends/providers/friend.provider';
+import { FriendsService } from 'src/friends/service/friends/friends.service';
+import { notificationProviders } from 'src/notifications/providers/notifications.providers';
 import { postProviders } from 'src/posts/providers/post.providers';
 import { postMediaProviders } from 'src/posts/providers/postMedia.providers';
 import { shareProviders } from 'src/shares/providers/share.provider';
@@ -22,8 +24,10 @@ import { ProfilesService } from './service/profiles/profiles.service';
     ...postProviders,
     ...friendProviders,
     ...shareProviders,
+    ...notificationProviders,
     ProfilesService,
     UsersService,
+    FriendsService,
   ],
 })
 export class ProfilesModule {}

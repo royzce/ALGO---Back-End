@@ -1,3 +1,4 @@
+import { UserProfile } from 'src/users/entities/userProfile.entity';
 import {
   ManyToOne,
   Column,
@@ -25,4 +26,8 @@ export class Media {
   @ManyToOne(() => Post, (post) => post.media)
   @JoinColumn({ name: 'postId' })
   post: Post;
+
+  @ManyToOne(() => UserProfile, (user) => user.media)
+  @JoinColumn({ name: 'userId' })
+  user: UserProfile;
 }
