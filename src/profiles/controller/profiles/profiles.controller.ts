@@ -26,7 +26,7 @@ export class ProfilesController {
     return this.profileService.getUsersByName(q);
   }
 
-  @Get('/photos')
+  @Get(':id/photos')
   getAllPhotos(@Request() req) {
     return this.profileService.getAllPhotos(req.user.userId);
   }
@@ -34,6 +34,10 @@ export class ProfilesController {
   getNonFriend(@Request() req) {
     return this.profileService.getNonFriend(req.user.userId);
   }
+
+  @Get(':username/photos')
+  getProfileAndPhotos(@Param('username') username: string) {}
+
   @Get(':username')
   getUserProfile(@Param('username') username: string) {
     return this.profileService.findProfile(username);
