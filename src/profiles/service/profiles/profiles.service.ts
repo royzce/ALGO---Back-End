@@ -57,7 +57,6 @@ export class ProfilesService {
       ],
     });
 
-    // const userId = user.userId;
     if (friend) {
       return await this.postRepository.find({
         where: [
