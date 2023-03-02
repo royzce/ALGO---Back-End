@@ -22,32 +22,6 @@ export class NotificationsService {
       relations: ['from'],
     });
 
-    // for (const notif of notifs) {
-    //   const { type, typeId: postId, userId } = notif;
-    //   let newNotifs = [];
-    //   let count = 0;
-    //   switch(type) {
-    //     case 'reaction': {
-    //       const reactions = await findReactionsUsingPostId(postId)
-    //       count = reactions.length;
-    //     }
-    //     break;
-    //     case 'share': {
-    //       const shares = await findShareUsingPostId(postId)
-    //       count = shares.length;
-    //     }
-    //     break;
-    //     case 'requestFriend': {
-    //       const friends = await findFriendRequest(userId)
-    //       count = friends.length
-    //     }
-    //     break;
-
-    //     notif = {...notifs, count}
-    //     newNotifs.push(notif);
-    //   }
-    // }
-    console.log('notif', notifs);
     return notifs;
   }
 

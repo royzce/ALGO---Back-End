@@ -61,8 +61,6 @@ export class ReactionsService {
         where: { postId: addReactionDto.postId, userId: Not(post.userId) },
       });
 
-      console.log(notifExist.count);
-
       notifExist = await this.notificationRepository.save(notifExist);
     } else {
       let notif = new Notification();

@@ -53,14 +53,12 @@ export class PostsService {
     userId: number,
   ): Promise<Post> {
     let post = new Post();
-    console.log('createpostdto', createPostDto);
     let postData = await this.postRepository.findOne({
       where: { postId: createPostDto.repostId },
     });
 
     if (createPostDto.isRepost === true) {
       let sharePost = new Share();
-      console.log('sharepost', postData);
       sharePost.postId = postData.postId;
       sharePost.date = createPostDto.date;
       sharePost.userId = userId;
@@ -145,18 +143,6 @@ export class PostsService {
           where: { type: 'tag', typeId: post.postId },
         });
 
-        // if (notifExist) {
-        //   notifExist.type = 'tag';
-        //   notifExist.userId = t;
-        //   notifExist.date = createPostDto.date;
-        //   notifExist.notifFrom = userId;
-        //   notifExist.isRead = false;
-        //   notifExist.typeId = post.postId;
-        //   notifExist.count = await this.tagRepository.count({
-        //     where: { postId: post.postId, userId: Not(userId) },
-        //   });
-        //   await this.notificationRepository.save(notifExist);
-        // } else {
         let notification = new Notification();
 
         notification.type = 'tag';
@@ -175,7 +161,6 @@ export class PostsService {
             HttpStatus.INTERNAL_SERVER_ERROR,
           );
         }
-        // }
       });
     }
 
@@ -265,8 +250,6 @@ export class PostsService {
       notifExist.count = count.count;
 
       notifExist = await this.notificationRepository.save(notifExist);
-
-      console.log('went here bebe');
     } else {
       let notification = new Notification();
 
@@ -507,9 +490,7 @@ export class PostsService {
         'reactions.user',
       ],
     });
-    console.log('allpost', allPosts);
     let friends = await this.friendService.getFriendList(currentUserId);
-    console.log('friends', friends);
     let searchRes = [];
     const userPost = allPosts.filter((post) => post.userId === currentUserId);
     searchRes = searchRes.concat(userPost);
@@ -527,7 +508,6 @@ export class PostsService {
       searchRes = searchRes.concat(publicPosts);
     }
 
-    console.log('search resutl', searchRes);
     return searchRes;
   }
 }

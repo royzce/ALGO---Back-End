@@ -52,9 +52,13 @@ export class FriendsService {
       notifExist.notifFrom = userId;
       notifExist.isRead = false;
       notifExist.typeId = 0;
-      notifExist.count = await this.friendRepository.count({
-        where: { userId: userId, status: 'pending' },
-      });
+      notifExist.count = await this.friendRepository
+        .createQueryBuilder('friend')
+        .where([
+          { status: 'pending', userId: userId },
+          { status: 'pending', friendId: userId },
+        ])
+        .getCount();
 
       notifExist = await this.notificationRepository.save(notifExist);
     } else {
@@ -131,15 +135,6 @@ export class FriendsService {
       notification = await this.notificationRepository.save(notification);
     }
 
-    // try {
-    //   notification = await this.notificationRepository.save(notification);
-    // } catch (error) {
-    //   throw new HttpException(
-    //     'Failed saving notification',
-    //     HttpStatus.INTERNAL_SERVER_ERROR,
-    //   );
-    // }
-
     return 'accepted';
   }
 
@@ -148,7 +143,6 @@ export class FriendsService {
       where: { friendId: userId, status: 'pending' },
       relations: ['user.friends'],
     });
-    // console.log('get friend req', res);
     return res;
   }
 
