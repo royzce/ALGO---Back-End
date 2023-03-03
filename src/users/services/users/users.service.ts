@@ -92,7 +92,6 @@ export class UsersService {
     let user = await this.userProfileRepository.findOne({
       where: { username: username },
     });
-    console.log('from user', user);
     if (user) {
       return 'taken';
     }
@@ -103,7 +102,6 @@ export class UsersService {
     let user = await this.userProfileRepository.findOne({
       where: { email: email },
     });
-    console.log('from email', user);
 
     if (user) {
       return 'taken';

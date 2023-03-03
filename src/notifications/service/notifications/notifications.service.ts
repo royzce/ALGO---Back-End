@@ -47,7 +47,6 @@ export class NotificationsService {
     //     newNotifs.push(notif);
     //   }
     // }
-    console.log('notif', notifs);
     return notifs;
   }
 

@@ -25,15 +25,14 @@ export class ProfilesController {
   getUsersByName(@Query('q') q: string) {
     return this.profileService.getUsersByName(q);
   }
+  @Get(':username/photos')
+  getUserPhotos(@Param('username') username: string) {
+    return this.profileService.getUserAndPhotos(username);
+  }
 
   @Get(':id/photos')
   getAllPhotos(@Request() req) {
     return this.profileService.getAllPhotos(req.user.userId);
-  }
-
-  @Get(':username/photos')
-  getUserPhotos(@Param('username') username: string) {
-    return this.profileService.getUserAndPhotos(username);
   }
 
   @Get('/discover')
@@ -41,8 +40,8 @@ export class ProfilesController {
     return this.profileService.getNonFriend(req.user.userId);
   }
 
-  @Get(':username/photos')
-  getProfileAndPhotos(@Param('username') username: string) {}
+  // @Get(':username/photos')
+  // getProfileAndPhotos(@Param('username') username: string) {}
 
   @Get(':username')
   getUserProfile(@Param('username') username: string) {

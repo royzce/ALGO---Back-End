@@ -139,7 +139,8 @@ export class ProfilesService {
     user.lastName = editProfileDto.lastName || user.lastName;
     user.avatar = editProfileDto.avatar || user.avatar;
     user.cover = editProfileDto.cover || user.cover;
-    editProfileDto.bio !== undefined || null ? editProfileDto.bio : user.bio;
+    user.bio =
+      editProfileDto.bio !== undefined || null ? editProfileDto.bio : user.bio;
 
     if (editProfileDto.interest) {
       await this.interestRepository.delete({ userId });
@@ -166,14 +167,12 @@ export class ProfilesService {
   }
 
   async getAllPhotos(_userId: number): Promise<Media[]> {
-    console.log(_userId);
     let photos = await this.postMediaRepository.find({
       where: { userId: _userId },
       order: {
         mediaId: 'DESC',
       },
     });
-    console.log(photos);
 
     return photos;
   }
@@ -183,7 +182,6 @@ export class ProfilesService {
       let user = await this.userProfileRepository.findOne({
         where: { username: username, userId: Not(userId) },
       });
-      console.log('from user', user);
       if (user) {
         return 'taken';
       }
@@ -197,7 +195,6 @@ export class ProfilesService {
       let user = await this.userProfileRepository.findOne({
         where: { email: email, userId: Not(userId) },
       });
-      console.log('from email', user);
 
       if (user) {
         return 'taken';
@@ -211,7 +208,6 @@ export class ProfilesService {
     const friends = await this.friendRepository.find({
       where: [{ userId: currentUserId }, { friendId: currentUserId }],
     });
-    console.log('friends including pending', friends);
     const allUsers = await this.userProfileRepository.find({
       where: { userId: Not(currentUserId) },
     });
@@ -221,10 +217,8 @@ export class ProfilesService {
           friend.friendId === user.userId || friend.userId === user.userId,
       );
       if (res) {
-        console.log('nag false', res);
         return false;
       }
-      console.log('nag true', res);
       return true;
     });
   }
@@ -239,7 +233,6 @@ export class ProfilesService {
     }
 
     let users = await this.friendService.getFriend(user.userId);
-    console.log('getusers and photos', users);
 
     return users;
   }
@@ -251,7 +244,6 @@ export class ProfilesService {
     });
     //check if the username is the current user
     if (randomUser.userId === currentUserId) {
-      console.log('this is you');
       return { userstatus: 'you' };
     }
 
@@ -271,7 +263,6 @@ export class ProfilesService {
       ],
     });
     if (isFriends) {
-      console.log('is friends');
       return { userStatus: 'friends' };
     }
 
@@ -302,7 +293,6 @@ export class ProfilesService {
     }
 
     //else this is stranger to you
-    console.log('nag else');
     return { userStatus: 'stranger' };
   }
 }

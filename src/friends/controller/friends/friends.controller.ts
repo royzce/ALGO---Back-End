@@ -36,18 +36,20 @@ export class FriendsController {
     return this.friendsService.addFriend(addFriendDto, req.user.userId);
   }
 
-  @Delete('reject')
-  rejectFriend(@Body() rejectFriendDto: RejectFriendDto, @Request() req) {
-    return this.friendsService.rejectFriend(
-      rejectFriendDto.friendId,
+  @Post('/delete')
+  deleteFriend(@Body() deleteFriendDto: DeleteFrienDto, @Request() req) {
+    console.log('INSIDE FRIEND CONTROLLER', deleteFriendDto);
+
+    return this.friendsService.deleteFriend(
+      deleteFriendDto.friendId,
       req.user.userId,
     );
   }
 
-  @Post('/delete')
-  deleteFriend(@Body() deleteFriendDto: DeleteFrienDto, @Request() req) {
-    return this.friendsService.deleteFriend(
-      deleteFriendDto.friendId,
+  @Delete('reject')
+  rejectFriend(@Body() rejectFriendDto: RejectFriendDto, @Request() req) {
+    return this.friendsService.rejectFriend(
+      rejectFriendDto.friendId,
       req.user.userId,
     );
   }

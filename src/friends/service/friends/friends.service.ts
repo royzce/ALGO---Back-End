@@ -148,7 +148,6 @@ export class FriendsService {
       where: { friendId: userId, status: 'pending' },
       relations: ['user.friends'],
     });
-    // console.log('get friend req', res);
     return res;
   }
 
@@ -176,7 +175,6 @@ export class FriendsService {
     }
 
     const friendList = user.filter((user) => user.userId !== userId);
-    console.log('friendList', friendList);
     return friendList;
   }
 
@@ -197,6 +195,8 @@ export class FriendsService {
         { friendId: userId, userId: friendId },
       ],
     });
+
+    console.log('INSIDE deletefriend', friend);
 
     friend = await this.friendRepository.remove(friend);
 
