@@ -38,8 +38,6 @@ export class FriendsController {
 
   @Post('/delete')
   deleteFriend(@Body() deleteFriendDto: DeleteFrienDto, @Request() req) {
-    console.log('INSIDE FRIEND CONTROLLER', deleteFriendDto);
-
     return this.friendsService.deleteFriend(
       deleteFriendDto.friendId,
       req.user.userId,
