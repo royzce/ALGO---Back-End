@@ -178,6 +178,26 @@ export class FriendsService {
     return friendList;
   }
 
+  async getSpecificFriendList(username: string) {
+    const userInPage = await this.userProfileRepository.findOneBy({ username });
+    const friends = await this.friendRepository
+      .createQueryBuilder('friend')
+      .where([
+        { status: 'friends', userId: userInPage.userId },
+        { status: 'friends', friendId: userInPage.userId },
+      ])
+      .getMany();
+
+    const user: UserProfile[] = [];
+
+    for (let friend of friends) {
+      user.push(await this.getFriend(friend.userId));
+      user.push(await this.getFriend(friend.friendId));
+    }
+    const friendList = user.filter((user) => user.userId !== userInPage.userId);
+    return friendList;
+  }
+
   async getFriend(friendId: number): Promise<UserProfile> {
     let user = await this.userProfileRepository.findOne({
       where: { userId: friendId },

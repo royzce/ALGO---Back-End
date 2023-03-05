@@ -27,6 +27,11 @@ export class FriendsController {
     return this.friendsService.getFriendList(req.user.userId);
   }
 
+  @Get('/:username/list')
+  getListFriend(@Param('username') username: string) {
+    return this.friendsService.getSpecificFriendList(username);
+  }
+
   @Get('/request')
   getFriendRequest(@Request() req) {
     return this.friendsService.getFriendRequest(req.user.userId);
