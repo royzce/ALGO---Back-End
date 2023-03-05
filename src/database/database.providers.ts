@@ -9,8 +9,8 @@ import { Share } from 'src/shares/entities/share.entity';
 import { PasswordResetToken } from 'src/users/entities/password-reset-token.entity';
 import { Interest } from 'src/users/entities/interest.entity';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
-import { userProfileProviders } from 'src/users/providers/userProfile.providers';
 import { createConnection } from 'typeorm';
+import { PreviousPassword } from 'src/users/entities/previous-password';
 
 export const databaseProviders = [
   {
@@ -31,6 +31,7 @@ export const databaseProviders = [
           Interest,
           Notification,
           PasswordResetToken,
+          PreviousPassword,
         ],
         synchronize: true,
       }),

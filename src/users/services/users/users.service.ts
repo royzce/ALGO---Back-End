@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  Catch,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { createUserProfileDto } from 'src/users/dtos/createUserProfile.dto';
 import { UserProfile } from 'src/users/entities/userProfile.entity';
 import { Repository } from 'typeorm';
@@ -9,6 +15,7 @@ import { use } from 'passport';
 import { Not } from 'typeorm/find-options/operator/Not';
 import { PasswordResetToken } from 'src/users/entities/password-reset-token.entity';
 import { Friend } from 'src/friends/entities/friend.entity';
+import { PreviousPassword } from 'src/users/entities/previous-password';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +26,8 @@ export class UsersService {
     private passwordResetTokenRepository: Repository<PasswordResetToken>,
     @Inject('FRIEND_REPOSITORY')
     private friendRepository: Repository<Friend>,
+    @Inject('PREVIOUSPASS_REPOSITORY')
+    private previousPasswordRepository: Repository<PreviousPassword>,
   ) {}
 
   async createNewUser(userDto: createUserProfileDto) {
@@ -46,6 +55,18 @@ export class UsersService {
 
     try {
       user = await this.userProfileRepository.save(user);
+    } catch (error) {
+      throw new HttpException(
+        'Registration Failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    let savePass = new PreviousPassword();
+    savePass.userId = user.userId;
+    savePass.previousPassword = user.password;
+    try {
+      savePass = await this.previousPasswordRepository.save(savePass);
     } catch (error) {
       throw new HttpException(
         'Registration Failed',
@@ -149,5 +170,26 @@ export class UsersService {
       relations: ['interest'],
     });
     return users;
+  }
+
+  async checkIfPasswordExisting(password: string, userId: number) {
+    const existing = await this.previousPasswordRepository.find({
+      where: { userId },
+    });
+
+    for (const prevPass of existing) {
+      let result = await bcrypt.compare(password, prevPass.previousPassword);
+      if (result) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async savePrevPassword(password: string, userId: number) {
+    let prevPass = new PreviousPassword();
+    prevPass.userId = userId;
+    prevPass.previousPassword = password;
+    prevPass = await this.previousPasswordRepository.save(prevPass);
   }
 }

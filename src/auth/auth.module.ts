@@ -15,6 +15,7 @@ import { MailerModule } from 'src/mailer/mailer.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { passwordResetTokenProviders } from 'src/users/providers/password-reset-token.providers';
 import { friendProviders } from 'src/friends/providers/friend.provider';
+import { previousPasswordProviders } from 'src/users/providers/previous-password.providers';
 
 @Module({
   imports: [
@@ -45,7 +46,8 @@ import { friendProviders } from 'src/friends/providers/friend.provider';
     ...interestProviders,
     ...passwordResetTokenProviders,
     ...friendProviders,
+    ...previousPasswordProviders,
   ],
   controllers: [AuthController],
 })
-export class AuthModule { }
+export class AuthModule {}

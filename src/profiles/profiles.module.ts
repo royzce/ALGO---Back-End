@@ -8,6 +8,7 @@ import { postMediaProviders } from 'src/posts/providers/postMedia.providers';
 import { shareProviders } from 'src/shares/providers/share.provider';
 import { interestProviders } from 'src/users/providers/interest.providers';
 import { passwordResetTokenProviders } from 'src/users/providers/password-reset-token.providers';
+import { previousPasswordProviders } from 'src/users/providers/previous-password.providers';
 import { userProfileProviders } from 'src/users/providers/userProfile.providers';
 import { UsersService } from 'src/users/services/users/users.service';
 import { ProfilesController } from './controller/profiles/profiles.controller';
@@ -25,6 +26,7 @@ import { ProfilesService } from './service/profiles/profiles.service';
     ...friendProviders,
     ...shareProviders,
     ...notificationProviders,
+    ...previousPasswordProviders,
     ProfilesService,
     UsersService,
     FriendsService,

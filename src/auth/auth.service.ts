@@ -108,10 +108,20 @@ export class AuthService {
       }
 
       if (newPassword) {
+        //check if password is existing in database
+        const existingPass = await this.usersService.checkIfPasswordExisting(
+          newPassword,
+          user.userId,
+        );
+        if (existingPass) {
+          throw new BadRequestException('Previous password is not allowed.');
+        }
         // Update the user's password in the database
         const saltOrRounds = 10;
         user.password = await bcrypt.hash(newPassword, saltOrRounds);
         await this.usersService.updateUser(user);
+
+        await this.usersService.savePrevPassword(user.password, user.userId);
 
         // Invalidate the token in the database, by removing in in the db
         await this.usersService.removeResetPwdToken(token);
@@ -123,7 +133,8 @@ export class AuthService {
       }
     } catch (error) {
       // If the token is invalid or expired, return an error response
-      throw new BadRequestException('Expired or invalid link');
+      // throw new BadRequestException('Expired or invalid link');
+      throw new BadRequestException(error.response.message);
     }
   }
 
@@ -134,11 +145,23 @@ export class AuthService {
   ) {
     const user = await this.usersService.findUserById(userId);
     if (user && (await bcrypt.compare(old_password, user.password))) {
+      //check if password is existing
+      const existingPassword = await this.usersService.checkIfPasswordExisting(
+        new_password,
+        userId,
+      );
+
+      if (existingPassword) {
+        throw new BadRequestException('Previous password is not allowed.');
+      }
+
       const saltOrRounds = 10;
       user.password = await bcrypt.hash(new_password, saltOrRounds);
+
+      await this.usersService.savePrevPassword(user.password, user.userId);
       return await this.usersService.updateUser(user);
     } else {
-      throw new BadRequestException('Old password did not match.');
+      throw new BadRequestException('Incorrect password.');
     }
   }
 }

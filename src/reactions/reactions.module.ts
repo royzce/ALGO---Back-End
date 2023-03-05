@@ -11,6 +11,7 @@ import { tagProviders } from 'src/posts/providers/tag.provider';
 import { PostsService } from 'src/posts/service/posts/posts.service';
 import { shareProviders } from 'src/shares/providers/share.provider';
 import { passwordResetTokenProviders } from 'src/users/providers/password-reset-token.providers';
+import { previousPasswordProviders } from 'src/users/providers/previous-password.providers';
 import { userProfileProviders } from 'src/users/providers/userProfile.providers';
 import { UsersService } from 'src/users/services/users/users.service';
 import { Connection } from 'typeorm/connection/Connection';
@@ -33,6 +34,7 @@ import { ReactionsService } from './service/reactions/reactions.service';
     ...postMediaProviders,
     ...postProviders,
     ...passwordResetTokenProviders,
+    ...previousPasswordProviders,
     {
       provide: 'POSTS_REPOSITORY',
       useFactory: (connection: Connection) => connection.getRepository(Post),
